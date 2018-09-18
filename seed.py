@@ -19,8 +19,6 @@ def load_dietaryreference():
                 if row[i] == "":
                     row[i] = None
 
-            print(row)
-
             reference = Reference(min_age = row[1],
                 gender = row[0],
                 max_age = row[2],
@@ -59,8 +57,8 @@ def load_dietaryreference():
     db.session.commit()
 
 
-def load_dietaryreference():
-    Reference.query.delete()
+def load_caloriereference():
+    Calorie.query.delete()
 
     for row in open("seed_data/u.calorie.csv"):
         row = row.rstrip().split(",")
@@ -80,10 +78,27 @@ def load_dietaryreference():
 
     db.session.commit()
 
+def load_user():
+    User.query.delete()
 
+    kellie = User(fname="Kellie",
+        lname="Tay",
+        email="kellie@gmail.com",
+        password="password")
+    
+    paul = User(fname="Paul",
+        lname="Ng",
+        email="paul@gmail.com",
+        password="password")
+
+    db.session.add_all([kellie, paul])
+
+    db.session.commit()
 
 if __name__ == "__main__":
     connect_to_db(app)
 
     # Import different types of data
     load_dietaryreference()
+    load_caloriereference()
+    load_user()

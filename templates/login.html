@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Login</h1>
+
+<div>
+    <form action='/verifylogin' method='POST'>
+        Email: <input type='text' name='email'>
+        Password: <input type='text' name='password'>
+        <input type='submit'>
+</div>
+
+
+{% endblock %}
