@@ -24,10 +24,33 @@ app.jinja_env.undefined = StrictUndefined
 @app.route("/")
 def index():
     """Homepage"""
-
     return render_template("homepage.html")
 
+@app.route("/login")
+def login_page():
+    """login"""
+    return render_template("login.html")
 
+@app.route('/verifylogin',methods = ['POST'])
+def verifylogin():
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    User_object = User.query.filter(User.email == email).first()
+
+    if User_object:
+        if User_object.password == password:
+            session['userid'] = email
+            flash("login successful")
+            return redirect('/')
+
+        else:
+            flash("Password is incorrect. Please try again")
+            return redirect('/login')
+
+    else:
+        flash("Login does not exist. Please create account")
+        return redirect('/registration')
 
 
 if __name__ == "__main__":
@@ -36,10 +59,10 @@ if __name__ == "__main__":
     app.debug = True
     # make sure templates, etc. are not cached in debug mode
     app.jinja_env.auto_reload = app.debug
-    app.config['DEBUroutG_TB_INTERCEPT_REDIRECTS'] = False
+    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     connect_to_db(app)
 
     # Use the DebugToolbar
-    DebugToolbarExtension(app)a
+    DebugToolbarExtension(app)
 
     app.run(port=5000, host='0.0.0.0')
