@@ -2,8 +2,12 @@
 {% block content %}
 
 
-    <div>
-    {% if session['userid'] %}
+
+
+<h1>Homepage</h1>
+
+<div>
+    {% if 'userid' in session %}
         <h2> Welcome, {{ session['userid'] }} </h2>
         <a href='/logout'> logout </a>
     {% else %}
@@ -12,7 +16,9 @@
     {% endif %}
 </div>
 
-
-<h1>Homepage</h1>
-
 {% endblock %}
+
+
+<div>
+
+</div>
