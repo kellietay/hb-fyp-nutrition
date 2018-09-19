@@ -51,8 +51,40 @@ def verifylogin():
 
     else:
         flash("Login does not exist. Please create account")
+        return redirect('/register')
+
+@app.route('/register')
+def registration_form():
+    """ register new users """
+    return render_template("register.html")
+
+@app.route('/add-user', methods = ['POST'])
+def add_user():
+    fname = request.form.get('fname')
+    lname = request.form.get('lname')
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    check_email = User.query.filter(User.email == email).first()
+    
+    if check_email:
+        flash("Email already taken. Please try logging in")
         return redirect('/registration')
 
+    else:
+        new_user = User(fname=fname, lname=lname, email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        flash("You have been added. Please login.")
+        return redirect('/login')
+
+@app.route('/logout')
+def logout():
+    session.pop('userid', None)
+    session.pop('fname', None)
+    flash('You were logged out')
+
+    return redirect('/')
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
