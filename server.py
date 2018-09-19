@@ -40,7 +40,8 @@ def verifylogin():
 
     if User_object:
         if User_object.password == password:
-            session['userid'] = email
+            session['userid'] = User_object.user_id
+            session['fname'] = User_object.fname
             flash("login successful")
             return redirect('/')
 
