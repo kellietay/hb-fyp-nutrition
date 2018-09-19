@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Register</h1>
+
+<div>
+    <form action='/add-user' method='POST'>
+        First Name: <input type='text' name='fname'>
+        Last Name: <input type='text' name='lname'>
+        Email: <input type='text' name='email'>
+        Password: <input type='text' name='password'>
+        <input type='submit'>
+</div>
+
+
+{% endblock %}
