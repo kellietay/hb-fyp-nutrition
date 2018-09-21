@@ -95,6 +95,20 @@ def load_user():
 
     db.session.commit()
 
+def load_profile():
+    Profile.query.delete()
+
+    kellie1 = Profile(user_id=1,
+        dietary_id=1,
+        calorie_id=1,
+        name="Matthew",
+        birthdate= "2016-08-06",
+        gender=False)
+
+    db.session.add(kellie1)
+
+    db.session.commit()
+
 if __name__ == "__main__":
     connect_to_db(app)
 
@@ -102,3 +116,4 @@ if __name__ == "__main__":
     load_dietaryreference()
     load_caloriereference()
     load_user()
+    load_profile()

@@ -29,7 +29,7 @@ class Profile(db.Model):
     dietary_id = db.Column(db.Integer, db.ForeignKey('dietaryreference.dietary_id'), nullable=False)
     calorie_id = db.Column(db.Integer, db.ForeignKey('caloriereference.calorie_id'), nullable=False)
     name =  db.Column(db.String(64), nullable=False)
-    birthdate = db.Column(db.DateTime, nullable=False)
+    birthdate = db.Column(db.Date, nullable=False)
     #If Female = True, Male = False and no gender specified = null
     gender = db.Column(db.Boolean, nullable=False)
 
@@ -37,6 +37,12 @@ class Profile(db.Model):
     user = db.relationship("User", backref=db.backref("profile",order_by=profile_id))
     reference = db.relationship("Reference", backref=db.backref("profile", order_by=profile_id))
     calorie = db.relationship("Calorie", backref=db.backref("profile",order_by=profile_id))
+
+    def __repr__(self):
+        """Provide helpful representation when printed."""
+
+        return "profile id={} name = {}, birthdate = {}".format(self.profile_id, self.name, self.birthdate)
+
 
 class Reference(db.Model):
     """ Reference table for Reccomended Daily Values """

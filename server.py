@@ -24,7 +24,10 @@ app.jinja_env.undefined = StrictUndefined
 @app.route("/")
 def index():
     """Homepage"""
-    return render_template("homepage.html")
+    profile_list = []
+    if session.get('userid',None):
+        profile_list = User.query.get(session['userid']).profile
+    return render_template("homepage.html",profiles=profile_list)
 
 @app.route("/login")
 def login_page():
@@ -36,12 +39,12 @@ def verifylogin():
     email = request.form.get('email')
     password = request.form.get('password')
 
-    User_object = User.query.filter(User.email == email).first()
+    user_object = User.query.filter(User.email == email).first()
 
-    if User_object:
-        if User_object.password == password:
-            session['userid'] = User_object.user_id
-            session['fname'] = User_object.fname
+    if user_object:
+        if user_object.password == password:
+            session['userid'] = user_object.user_id
+            session['fname'] = user_object.fname
             flash("login successful")
             return redirect('/')
 
@@ -86,6 +89,11 @@ def logout():
 
     return redirect('/')
 
+@app.route('profile/'+session[userid]+'/<profilename>')
+def profile(profilename)
+    
+    
+    
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
     # point that we invoke the DebugToolbarExtension
