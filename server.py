@@ -89,11 +89,15 @@ def logout():
 
     return redirect('/')
 
-@app.route('profile/'+session[userid]+'/<profilename>')
-def profile(profilename)
+@app.route('/profile/<userid>/<profileid>')
+def profile(userid, profileid):
     
+    if session.get('userid',None):
+        profile_list = User.query.filter(session['userid']).profile
     
+    return render_template('profile.html')
     
+
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
     # point that we invoke the DebugToolbarExtension
