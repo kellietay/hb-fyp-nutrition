@@ -3,13 +3,25 @@
 from jinja2 import StrictUndefined
 
 from flask import (Flask, render_template, redirect, request, flash,
-                   session)
+                   session, g)
 from flask_debugtoolbar import DebugToolbarExtension
 
 from model import User, Profile, Reference, Food, Record, Calorie, connect_to_db, db
 
 from sqlalchemy.sql import func
 
+import datetime
+
+from functools import wraps
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('userid') is None:
+            flash("The page you are trying to access requires a login. Please login.")
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated_function
 
 app = Flask(__name__)
 
@@ -90,13 +102,39 @@ def logout():
     return redirect('/')
 
 @app.route('/profile/<userid>/<profileid>')
+@login_required
 def profile(userid, profileid):
     
-    if session.get('userid',None):
-        profile_list = User.query.filter(session['userid']).profile
+    #1: retrieve profile id and birth date
+
+    profile_obj = Profile.query.get(profileid)
+    print(profile_obj.birthdate)
+
+    #2: use birthdate to calculate the correct Reference and Calorie tables
+
+    age = (datetime.date.today() - profile_obj.birthdate).days / 365
+
+    ref_obj = Reference.query.filter(Reference.min_age < age).filter(Reference.max_age > age).first()
+
+    cal_obj = Calorie.query.filter(Calorie.min_age < age).filter(Calorie.max_age > age).first()
+
+    #3: save the Reference and Calorie tables to the db
+
+
+
+    #4: retrieve the Reference and Calorie tables and display on the html page
+
+    nutrient_list = ['carbohydrates', 'fiber', 'fat', 'protein', 'vitA', 'vitC', 'vitD', 'vitE', 'vitB6', 'vitB12', 'thiamin', 'riboflavin', 'niacin', 'folate', 'calcium', 'copper', 'iodine', 'iron', 'magnesium', 'phosphorus', 'selenium', 'zinc', 'potassium', 'sodium', 'chloride']
+
+    #5: retrieve the Records from the record db for this profile
+    #6: calculate the quantity based on the Food table
+    #7: display the respective nutrients on the html
     
-    return render_template('profile.html')
+    return render_template('profile.html', ref_obj=ref_obj, cal_obj=cal_obj, nutrient_list=nutrient_list)
     
+
+
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the

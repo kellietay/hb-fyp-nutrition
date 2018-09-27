@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Homepage</h1>
+<h1>Profile</h1>
 
 <div>
     {% if 'userid' in session %}
@@ -22,9 +22,23 @@
     {% endif %}
 </div>
 
+<table>
+    <tr>
+        <th>Nutrient Name</th>
+        <th>Reccomended Daily Value</th>
+        <th>Today's Values</th>
+    </tr>
+    <tr>
+        <td>Calories</td>
+        <td>{{cal_obj.calories_modactive}}
+        <td>0</td>
+    </tr>
+    {%for item in nutrient_list %}
+        <tr>
+            <td>{{item}}</td>
+            <td>{{ ref_obj[item] }}</td>
+            <td>0</td>
+        </tr>
+    {% endfor %}
+
 {% endblock %}
-
-
-<div>
-
-</div>
