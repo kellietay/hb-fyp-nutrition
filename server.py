@@ -71,7 +71,7 @@ def verifylogin():
 @app.route('/register')
 def registration_form():
     """ register new users """
-    return render_template("register.html")
+    return render_template("register.html");
 
 @app.route('/add-user', methods = ['POST'])
 def add_user():
@@ -124,13 +124,37 @@ def profile(userid, profileid):
 
     #4: retrieve the Reference and Calorie tables and display on the html page
 
-    nutrient_list = ['carbohydrates', 'fiber', 'fat', 'protein', 'vitA', 'vitC', 'vitD', 'vitE', 'vitB6', 'vitB12', 'thiamin', 'riboflavin', 'niacin', 'folate', 'calcium', 'copper', 'iodine', 'iron', 'magnesium', 'phosphorus', 'selenium', 'zinc', 'potassium', 'sodium', 'chloride']
+    nutrient_dict = {'carbohydrates': 'Carbohydrates (g)', 
+        'fiber': 'Total Fibre (g)', 
+        'fat': 'Fat (g)', 
+        'protein': 'Protein (g)', 
+        'vitA' : 'Vitamin A (μg)', 
+        'vitC' : 'Vitamin C (mg)', 
+        'vitD' : 'Vitamin D (mg)',
+        'vitE' : 'Vitamin E (mg)', 
+        'vitB6' : 'Vitamin B6 (mg)', 
+        'vitB12' : 'Vitamin B12 (μg)', 
+        'thiamin' : 'Thiamin (mg)', 
+        'riboflavin' : 'Riboflavin (mg)', 
+        'niacin' : 'Niacin (mg)', 
+        'folate' : 'Folate(μg)', 
+        'calcium': 'Calcium (mg)', 
+        'copper' : 'Coper (μg)', 
+        'iodine' : 'Iodine(μg)', 
+        'iron' : 'Iron (mg)', 
+        'magnesium' : 'Magnesium (mg)', 
+        'phosphorus' : 'Phosphorus (mg)', 
+        'selenium' : 'Selemium (μg)', 
+        'zinc' : 'Zinc (mg)', 
+        'potassium' : 'Potassium (g)',
+        'sodium' : 'Sodium (μg)', 
+        'chloride': 'Chloride (g)'}
 
     #5: retrieve the Records from the record db for this profile
     #6: calculate the quantity based on the Food table
     #7: display the respective nutrients on the html
     
-    return render_template('profile.html', ref_obj=ref_obj, cal_obj=cal_obj, nutrient_list=nutrient_list)
+    return render_template('profile.html', ref_obj=ref_obj, cal_obj=cal_obj, nutrient_dict=nutrient_dict)
     
 
 

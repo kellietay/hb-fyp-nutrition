@@ -5,7 +5,7 @@
 
 <div>
     {% if 'userid' in session %}
-        <h2> Welcome, {{ session['fname'] }}, {{ session['userid'] }} </h2>
+        <h2> Welcome, {{ session['fname'] }}</h2>
         <br><br>
         {% if profiles is defined %}
         <h3>Profiles</h3>
@@ -33,9 +33,9 @@
         <td>{{cal_obj.calories_modactive}}
         <td>0</td>
     </tr>
-    {%for item in nutrient_list %}
+    {%for item in nutrient_dict %}
         <tr>
-            <td>{{item}}</td>
+            <td>{{ nutrient_dict[item] }}</td>
             <td>{{ ref_obj[item] }}</td>
             <td>0</td>
         </tr>
