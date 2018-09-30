@@ -26,8 +26,8 @@ class Profile(db.Model):
 
     profile_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-    dietary_id = db.Column(db.Integer, db.ForeignKey('dietaryreference.dietary_id'), nullable=False)
-    calorie_id = db.Column(db.Integer, db.ForeignKey('caloriereference.calorie_id'), nullable=False)
+    # dietary_id = db.Column(db.Integer, db.ForeignKey('dietaryreference.dietary_id'), nullable=False)
+    # calorie_id = db.Column(db.Integer, db.ForeignKey('caloriereference.calorie_id'), nullable=False)
     name =  db.Column(db.String(64), nullable=False)
     birthdate = db.Column(db.Date, nullable=False)
     #If Female = True, Male = False and no gender specified = null
@@ -35,8 +35,8 @@ class Profile(db.Model):
 
     #Define relationship between Profile and User
     user = db.relationship("User", backref=db.backref("profile",order_by=profile_id))
-    reference = db.relationship("Reference", backref=db.backref("profile", order_by=profile_id))
-    calorie = db.relationship("Calorie", backref=db.backref("profile",order_by=profile_id))
+    # reference = db.relationship("Reference", backref=db.backref("profile", order_by=profile_id))
+    # calorie = db.relationship("Calorie", backref=db.backref("profile",order_by=profile_id))
 
     def __repr__(self):
         """Provide helpful representation when printed."""

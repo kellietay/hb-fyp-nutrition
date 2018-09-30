@@ -151,14 +151,41 @@ def profile(userid, profileid):
         'chloride': 'Chloride (g)'}
 
     #5: retrieve the Records from the record db for this profile
+
+
     #6: calculate the quantity based on the Food table
     #7: display the respective nutrients on the html
     
     return render_template('profile.html', ref_obj=ref_obj, cal_obj=cal_obj, nutrient_dict=nutrient_dict)
     
 
+@app.route('/profile/new-profile')
+@login_required
+def newprofile():
+    return render_template('newprofile.html')
 
+@app.route('/profile/add-new-profile', methods = ['POST'])
+@login_required
+def addprofile():
+    name = request.form.get('name')
+    birthdate = request.form.get('birthdate')
+    gender = request.form.get('gender')
 
+    gender_bool = False
+
+    if gender == 'Male':
+        gender_bool = False
+    elif gender == 'Female':
+        gender_bool = True
+
+    new_profile = Profile(name=name, birthdate=birthdate, gender=gender_bool, user_id=session.get('userid'))
+    db.session.add(new_profile)
+    db.session.commit()
+    flash("New profile {} has been created".format(name))
+    
+    profile_obj = Profile.query.filter(Profile.name==name).filter(Profile.user_id==session.get('userid')).first()
+
+    return redirect('/profile/{}/{}'.format(session['userid'], profile_obj.profile_id))
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the

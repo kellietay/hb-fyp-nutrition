@@ -99,8 +99,6 @@ def load_profile():
     Profile.query.delete()
 
     kellie1 = Profile(user_id=1,
-        dietary_id=1,
-        calorie_id=1,
         name="Matthew",
         birthdate= "2016-08-06",
         gender=False)
