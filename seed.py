@@ -79,6 +79,7 @@ def load_caloriereference():
     db.session.commit()
 
 def load_user():
+    Profile.query.delete()
     User.query.delete()
 
     kellie = User(fname="Kellie",
@@ -107,6 +108,79 @@ def load_profile():
 
     db.session.commit()
 
+def load_food():
+    Food.query.delete()
+
+    test1 = Food(food_name="test1",
+        brand_name = None,
+        serving_qty = 1,
+        serving_unit = "container",
+        serving_weight_grams = "111",
+        calories = 75.48,
+        carbohydrates = 19.41,
+        fiber = 1.33,
+        fat = 0.19,
+        protein = 0.18,
+        vitA = 1,
+        vitC = 1,
+        vitD = 1,
+        vitE = 1,
+        vitB6 = 1,
+        vitB12 = 1,
+        thiamin = 1,
+        riboflavin = 1, 
+        niacin = 1,
+        folate = 1,
+        calcium = 1,
+        copper = 1,
+        iodine = 1,
+        iron = 1,
+        magnesium = 1,
+        phosphorus = 1,
+        selenium = 1,
+        zinc = 1,
+        potassium = 1,
+        sodium = 1,
+        chloride = 1)
+
+
+    test2 = Food(food_name="test2",
+        brand_name = None,
+        serving_qty = 1,
+        serving_unit = "container",
+        serving_weight_grams = "111",
+        calories = 100,
+        carbohydrates = 30,
+        fiber = 1.33,
+        fat = 0.19,
+        protein = 0.18,
+        vitA = 1,
+        vitC = 1,
+        vitD = 1,
+        vitE = 1,
+        vitB6 = 1,
+        vitB12 = 1,
+        thiamin = 1,
+        riboflavin = 1, 
+        niacin = 1,
+        folate = 1,
+        calcium = 1,
+        copper = 1,
+        iodine = 1,
+        iron = 1,
+        magnesium = 1,
+        phosphorus = 1,
+        selenium = 1,
+        zinc = 1,
+        potassium = 1,
+        sodium = 1,
+        chloride = 1)
+
+    db.session.add(test1)
+    db.session.add(test2)
+    db.session.commit()
+
+
 if __name__ == "__main__":
     connect_to_db(app)
 
@@ -115,3 +189,4 @@ if __name__ == "__main__":
     load_caloriereference()
     load_user()
     load_profile()
+    load_food()

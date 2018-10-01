@@ -14,6 +14,8 @@ import datetime
 
 from functools import wraps
 
+import requests
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
