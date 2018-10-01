@@ -141,7 +141,8 @@ def load_food():
         zinc = 1,
         potassium = 1,
         sodium = 1,
-        chloride = 1)
+        chloride = 1,
+        alt_measures = "cup: 246, container: 111, pouch: 90, g: 100")
 
 
     test2 = Food(food_name="test2",
@@ -174,12 +175,34 @@ def load_food():
         zinc = 1,
         potassium = 1,
         sodium = 1,
-        chloride = 1)
+        chloride = 1,
+        alt_measures = "cup: 246, container: 111, pouch: 90, g: 100")
 
     db.session.add(test1)
     db.session.add(test2)
     db.session.commit()
 
+def load_record():
+
+    Record.query.delete()
+
+    test1 = Record(profile_id=1,
+        food_id=1,
+        date="2018-09-30",
+        serving_qty=1,
+        serving_unit='container',
+        serving_weight_grams=111)
+
+    test2 = Record(profile_id=1,
+        food_id=1,
+        date="2018-09-30",
+        serving_qty=1,
+        serving_unit='container',
+        serving_weight_grams=111)
+
+    db.session.add(test1)
+    db.session.add(test2)
+    db.session.commit()
 
 if __name__ == "__main__":
     connect_to_db(app)
@@ -190,3 +213,4 @@ if __name__ == "__main__":
     load_user()
     load_profile()
     load_food()
+    load_record()

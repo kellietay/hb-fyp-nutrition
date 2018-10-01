@@ -144,6 +144,7 @@ class Food(db.Model):
     potassium = db.Column(db.Float, nullable = False)
     sodium = db.Column(db.Float, nullable = False)
     chloride = db.Column(db.Float, nullable = False)
+    alt_measures = db.Column(db.String(200), nullable=True)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -157,8 +158,10 @@ class Record(db.Model):
     record_id = db.Column(db.Integer, autoincrement=True, primary_key=True)    
     profile_id = db.Column(db.Integer, db.ForeignKey('profiles.profile_id'), nullable=False)
     food_id = db.Column(db.Integer, db.ForeignKey('foods.food_id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    serving_qty = db.Column(db.Float, nullable=False)
+    serving_unit = db.Column(db.String, nullable=False)
     serving_weight_grams = db.Column(db.Float, nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
 
     #setup relationships
     food = db.relationship("Food", backref=db.backref("record"))
@@ -169,7 +172,6 @@ class Record(db.Model):
         """Provide helpful representation when printed."""
 
         return "profile id ={}, food id={}, serving weight={}, date={} = {}".format(self.profile_id, self.food_id, self.serving_weight_grams, self.date)
-
 
 ##############################################################################
 # Helper functions
