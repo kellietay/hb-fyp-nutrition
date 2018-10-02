@@ -171,7 +171,11 @@ class Record(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "profile id ={}, food id={}, serving weight={}, date={} = {}".format(self.profile_id, self.food_id, self.serving_weight_grams, self.date)
+        return "profile id ={}, food id={}, serving weight={}, date={}".format(self.profile_id, self.food_id, self.serving_weight_grams, self.date)
+
+    @classmethod
+    def get_records_from_db(cls, profileid, user_def_date):
+        return Record.query.filter(Record.profile_id == profileid).filter(Record.date==user_def_date).all()
 
 ##############################################################################
 # Helper functions

@@ -152,10 +152,13 @@ def profile(userid, profileid):
         'sodium' : 'Sodium (μg)', 
         'chloride': 'Chloride (g)'}
 
-    #5: retrieve the Records from the record db for this profile
+    #5: retrieve the Records from the record db for this profile and today's date
 
+    rec_obj = Record.get_records_from_db(profileid, datetime.date.today())
 
     #6: calculate the quantity based on the Food table
+
+    
     #7: display the respective nutrients on the html
     
     return render_template('profile.html', ref_obj=ref_obj, cal_obj=cal_obj, nutrient_dict=nutrient_dict)

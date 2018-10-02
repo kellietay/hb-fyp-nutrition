@@ -194,11 +194,11 @@ def load_record():
         serving_weight_grams=111)
 
     test2 = Record(profile_id=1,
-        food_id=1,
-        date="2018-09-30",
-        serving_qty=1,
-        serving_unit='container',
-        serving_weight_grams=111)
+        food_id=2,
+        date="2018-09-29",
+        serving_qty=3,
+        serving_unit='cup',
+        serving_weight_grams=246)
 
     db.session.add(test1)
     db.session.add(test2)
