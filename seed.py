@@ -111,7 +111,7 @@ def load_profile():
 def load_food():
     Food.query.delete()
 
-    test1 = Food(food_name="test1",
+    test1 = Food(food_name="AppleSauce",
         brand_name = None,
         serving_qty = 1,
         serving_unit = "container",
@@ -145,7 +145,7 @@ def load_food():
         alt_measures = "cup: 246, container: 111, pouch: 90, g: 100")
 
 
-    test2 = Food(food_name="test2",
+    test2 = Food(food_name="Watermelon Juice",
         brand_name = None,
         serving_qty = 1,
         serving_unit = "container",
@@ -184,18 +184,16 @@ def load_food():
 
 def load_record():
 
-    Record.query.delete()
-
     test1 = Record(profile_id=1,
         food_id=1,
-        date="2018-09-30",
+        date=datetime.date.today(),
         serving_qty=1,
         serving_unit='container',
         serving_weight_grams=111)
 
     test2 = Record(profile_id=1,
         food_id=2,
-        date="2018-09-29",
+        date=datetime.date.today(),
         serving_qty=3,
         serving_unit='cup',
         serving_weight_grams=246)

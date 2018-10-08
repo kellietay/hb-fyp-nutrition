@@ -3,7 +3,7 @@
 from jinja2 import StrictUndefined
 
 from flask import (Flask, render_template, redirect, request, flash,
-                   session, g)
+                   session, g, jsonify)
 from flask_debugtoolbar import DebugToolbarExtension
 
 from model import User, Profile, Reference, Food, Record, Calorie, connect_to_db, db
@@ -15,6 +15,8 @@ import datetime
 from functools import wraps
 
 import requests
+
+from copy import deepcopy
 
 def login_required(f):
     @wraps(f)
@@ -141,7 +143,7 @@ def profile(userid, profileid):
         'niacin' : 'Niacin (mg)', 
         'folate' : 'Folate(μg)', 
         'calcium': 'Calcium (mg)', 
-        'copper' : 'Coper (μg)', 
+        'copper' : 'Copper (μg)', 
         'iodine' : 'Iodine(μg)', 
         'iron' : 'Iron (mg)', 
         'magnesium' : 'Magnesium (mg)', 
@@ -154,14 +156,13 @@ def profile(userid, profileid):
 
     #5: retrieve the Records from the record db for this profile and today's date
 
-    rec_obj = Record.get_records_from_db(profileid, datetime.date.today())
+    rec_obj = Record.get_records_from_db(profileid, "2018-10-07")
 
-    #6: calculate the quantity based on the Food table
-
+    total_nutrients = Record.calculate_total(rec_obj)
     
+
     #7: display the respective nutrients on the html
-    
-    return render_template('profile.html', ref_obj=ref_obj, cal_obj=cal_obj, nutrient_dict=nutrient_dict)
+    return render_template('profile.html', ref_obj=ref_obj, cal_obj=cal_obj, nutrient_dict=nutrient_dict, rec_obj=rec_obj, total_nutrients=total_nutrients)
     
 
 @app.route('/profile/new-profile')

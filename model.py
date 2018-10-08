@@ -177,6 +177,48 @@ class Record(db.Model):
     def get_records_from_db(cls, profileid, user_def_date):
         return Record.query.filter(Record.profile_id == profileid).filter(Record.date==user_def_date).all()
 
+    @classmethod
+    def calculate_total(cls, rec_obj_list):
+
+        total_list = {'calories': 0,
+            'carbohydrates': 0, 
+            'fiber': 0, 
+            'fat': 0, 
+            'protein': 0, 
+            'vitA' : 0, 
+            'vitC' : 0, 
+            'vitD' : 0,
+            'vitE' : 0, 
+            'vitB6' : 0, 
+            'vitB12' : 0, 
+            'thiamin' : 0, 
+            'riboflavin' : 0, 
+            'niacin' : 0, 
+            'folate' : 0, 
+            'calcium' : 0, 
+            'copper' : 0, 
+            'iodine' : 0, 
+            'iron' : 0, 
+            'magnesium' : 0, 
+            'phosphorus' : 0, 
+            'selenium' : 0, 
+            'zinc' : 0, 
+            'potassium' : 0,
+            'sodium' : 0, 
+            'chloride': 0}
+
+        if rec_obj_list != []:
+
+            # For each record object
+            for item in rec_obj_list:
+                #Calculate the multiplier
+                multiplier = (item.serving_qty * item.serving_weight_grams)/item.food.serving_weight_grams
+                
+                for key in total_list:
+                    total_list[key] += round(item.food.__dict__.get(key,0) * multiplier, 2)
+
+        return total_list
+
 ##############################################################################
 # Helper functions
 
