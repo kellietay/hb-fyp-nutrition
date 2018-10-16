@@ -18,6 +18,8 @@ import requests
 
 from copy import deepcopy
 
+import json
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -43,7 +45,8 @@ def index():
     profile_list = []
     if session.get('userid',None):
         profile_list = User.query.get(session['userid']).profile
-    return render_template("homepage.html",profiles=profile_list)
+
+    return render_template("homepage.html",profiles=profile_list,date_today=datetime.today())
 
 @app.route("/login")
 def login_page():
@@ -164,6 +167,48 @@ def profile(userid, profileid):
     #7: display the respective nutrients on the html
     return render_template('profile.html', ref_obj=ref_obj, cal_obj=cal_obj, nutrient_dict=nutrient_dict, rec_obj=rec_obj, total_nutrients=total_nutrients)
     
+
+@app.route('/profile/<userid>/<profileid>/retrieve')
+@login_required
+def retrieve_table(userid, profileid, inputdate):
+
+    profile_obj = Profile.query.get(profileid)
+    print(profile_obj.birthdate)
+
+    #2: use birthdate to calculate the correct Reference and Calorie tables
+
+
+
+
+    rec_obj = Record.get_records_from_db(profileid, inputdate)
+    total_nutrients = Record.calculate_total(rec_obj)
+    nutrient_dict = {'carbohydrates': 'Carbohydrates (g)', 
+        'fiber': 'Total Fibre (g)', 
+        'fat': 'Fat (g)', 
+        'protein': 'Protein (g)', 
+        'vitA' : 'Vitamin A (μg)', 
+        'vitC' : 'Vitamin C (mg)', 
+        'vitD' : 'Vitamin D (mg)',
+        'vitE' : 'Vitamin E (mg)', 
+        'vitB6' : 'Vitamin B6 (mg)', 
+        'vitB12' : 'Vitamin B12 (μg)', 
+        'thiamin' : 'Thiamin (mg)', 
+        'riboflavin' : 'Riboflavin (mg)', 
+        'niacin' : 'Niacin (mg)', 
+        'folate' : 'Folate(μg)', 
+        'calcium': 'Calcium (mg)', 
+        'copper' : 'Copper (μg)', 
+        'iodine' : 'Iodine(μg)', 
+        'iron' : 'Iron (mg)', 
+        'magnesium' : 'Magnesium (mg)', 
+        'phosphorus' : 'Phosphorus (mg)', 
+        'selenium' : 'Selemium (μg)', 
+        'zinc' : 'Zinc (mg)', 
+        'potassium' : 'Potassium (g)',
+        'sodium' : 'Sodium (μg)', 
+        'chloride': 'Chloride (g)'}
+
+
 
 @app.route('/profile/new-profile')
 @login_required

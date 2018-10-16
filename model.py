@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
-
+from flask import jsonify
 db = SQLAlchemy()
 
 class User(db.Model):
@@ -174,8 +174,16 @@ class Record(db.Model):
         return "profile id ={}, food id={}, serving weight={}, date={}".format(self.profile_id, self.food_id, self.serving_weight_grams, self.date)
 
     @classmethod
+    def convert_to_json(cls, lst):
+        
+        
+        json_dict = self.__dict__
+        json_dict.pop('_sa_instance_state')
+
+    @classmethod
     def get_records_from_db(cls, profileid, user_def_date):
         return Record.query.filter(Record.profile_id == profileid).filter(Record.date==user_def_date).all()
+
 
     @classmethod
     def calculate_total(cls, rec_obj_list):

@@ -22,6 +22,14 @@
     {% endif %}
 </div>
 
+<div>
+    <form action='/profile/add-new-profile' method='POST'>
+        Date: <input type='date' name='date' id="inputdate">
+        <input type='submit' id='submit'>
+    </form>
+        
+</div>
+<div id="profiletables">
 <table>
     <tr>
         <th>Nutrient Name</th>
@@ -61,6 +69,7 @@
         </tr>
     {% endfor %}
     </table>
+</div>
 </div>
 
 <!-- <script src="profile.js"></script> -->
