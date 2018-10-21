@@ -46,7 +46,7 @@ def index():
     if session.get('userid',None):
         profile_list = User.query.get(session['userid']).profile
 
-    return render_template("homepage.html",profiles=profile_list,date_today=datetime.today())
+    return render_template("homepage.html",profiles=profile_list)
 
 @app.route("/login")
 def login_page():
@@ -165,15 +165,67 @@ def profile(userid, profileid):
     
 
     #7: display the respective nutrients on the html
-    return render_template('profile.html', ref_obj=ref_obj, cal_obj=cal_obj, nutrient_dict=nutrient_dict, rec_obj=rec_obj, total_nutrients=total_nutrients)
+    return render_template('profile.html', profileid=profileid, userid=userid, ref_obj=ref_obj, cal_obj=cal_obj, nutrient_dict=nutrient_dict, rec_obj=rec_obj, total_nutrients=total_nutrients)
     
 
-@app.route('/profile/<userid>/<profileid>/retrieve')
+@app.route('/profile/retrieve')
 @login_required
-def retrieve_table(userid, profileid, inputdate):
+def retrieve_table():
+
+    profileid = request.args.get('profileid')
+    inputdate = request.args.get('inputdate')
 
     profile_obj = Profile.query.get(profileid)
-    print(profile_obj.birthdate)
+
+    age = (datetime.date.today() - profile_obj.birthdate).days / 365
+
+    ref_obj = Reference.query.filter(Reference.min_age < age).filter(Reference.max_age > age).first()
+
+    cal_obj = Calorie.query.filter(Calorie.min_age < age).filter(Calorie.max_age > age).first()
+
+    #3: save the Reference and Calorie tables to the db
+
+
+
+    #4: retrieve the Reference and Calorie tables and display on the html page
+
+    nutrient_dict = {'carbohydrates': 'Carbohydrates (g)', 
+        'fiber': 'Total Fibre (g)', 
+        'fat': 'Fat (g)', 
+        'protein': 'Protein (g)', 
+        'vitA' : 'Vitamin A (μg)', 
+        'vitC' : 'Vitamin C (mg)', 
+        'vitD' : 'Vitamin D (mg)',
+        'vitE' : 'Vitamin E (mg)', 
+        'vitB6' : 'Vitamin B6 (mg)', 
+        'vitB12' : 'Vitamin B12 (μg)', 
+        'thiamin' : 'Thiamin (mg)', 
+        'riboflavin' : 'Riboflavin (mg)', 
+        'niacin' : 'Niacin (mg)', 
+        'folate' : 'Folate(μg)', 
+        'calcium': 'Calcium (mg)', 
+        'copper' : 'Copper (μg)', 
+        'iodine' : 'Iodine(μg)', 
+        'iron' : 'Iron (mg)', 
+        'magnesium' : 'Magnesium (mg)', 
+        'phosphorus' : 'Phosphorus (mg)', 
+        'selenium' : 'Selemium (μg)', 
+        'zinc' : 'Zinc (mg)', 
+        'potassium' : 'Potassium (g)',
+        'sodium' : 'Sodium (μg)', 
+        'chloride': 'Chloride (g)'}
+
+    #5: retrieve the Records from the record db for this profile and today's date
+
+    rec_obj = Record.get_records_from_db(profileid, inputdate)
+
+    total_nutrients = Record.calculate_total(rec_obj)
+    
+
+    #7: display the respective nutrients on the html
+    return render_template('profile_ajax.html', profileid=profileid, ref_obj=ref_obj, cal_obj=cal_obj, nutrient_dict=nutrient_dict, rec_obj=rec_obj, total_nutrients=total_nutrients)
+    
+
 
     #2: use birthdate to calculate the correct Reference and Calorie tables
 

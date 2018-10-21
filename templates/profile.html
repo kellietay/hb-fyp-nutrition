@@ -3,9 +3,11 @@
 
 <h1>Profile</h1>
 
+
 <div>
     {% if 'userid' in session %}
         <h2> Welcome, {{ session['fname'] }}</h2>
+        <input id="profileid" type="hidden" name="profileid" value={{ profileid }}>
         <br><br>
         {% if profiles is defined %}
         <h3>Profiles</h3>
@@ -23,7 +25,7 @@
 </div>
 
 <div>
-    <form action='/profile/add-new-profile' method='POST'>
+    <form id="date-form">
         Date: <input type='date' name='date' id="inputdate">
         <input type='submit' id='submit'>
     </form>
@@ -72,5 +74,37 @@
 </div>
 </div>
 
-<!-- <script src="profile.js"></script> -->
+<script src="/static/profile.js"></script>
+
 {% endblock %}
+
+
+
+<!-- <script>
+
+function replaceTables(results){
+    var status = results;
+    $('#profiletables').html(status);
+    console.log("Finished replaceTables");
+}
+
+function updateTables(evt){
+    evt.preventDefault()
+    const formData = {
+            inputdate: $('#inputdate').val(),
+            profileid: $('#profileid').val()
+        }
+
+    $.get("/profile/retrieve", formData, replaceTables);
+    console.log("ran AJAX");
+}
+
+function initReload(){
+    console.log("initReload is on");
+    $('#date-form').on('submit', updateTables);
+}
+
+initReload();
+console.log("please run");
+
+</script> -->

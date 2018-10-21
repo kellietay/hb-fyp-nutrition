@@ -1,0 +1,40 @@
+<table>
+    <tr>
+        <th>Nutrient Name</th>
+        <th>Reccomended Daily Value</th>
+        <th>Today's Values</th>
+    </tr>
+    <tr>
+        <td>Calories</td>
+        <td>{{cal_obj.calories_modactive}}
+        <td>{{total_nutrients['calories']}}</td>
+    </tr>
+    {%for item in nutrient_dict %}
+        <tr>
+            <td>{{ nutrient_dict[item] }}</td>
+            <td>{{ ref_obj[item] }}</td>
+            <td>{{ total_nutrients[item] }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+<div>
+<h1>Foods eaten today</h1>
+    <table>
+        <tr>
+            <th>Food</th>
+            <th>Quantity</th>
+            <th>Unit </th>
+            <th>Serving Weight (g)</th>
+        </tr>
+
+    {%for item in rec_obj %}
+        <tr>
+            <td>{{ item.food.food_name }}</td>
+            <td>{{ item.serving_qty }}</td>
+            <td>{{ item.serving_unit }}</td>
+            <td>{{ item.serving_weight_grams }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>

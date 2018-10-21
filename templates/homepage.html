@@ -10,7 +10,7 @@
         {% if profiles is defined %}
         <h3>Profiles</h3>
             {% for profile in profiles %}
-            <a href='/profile/{{ session['userid'] }}/{{ profile.profile_id }}/{{ date_today }}'>{{ profile.name }}'s Profile</div>
+            <a href='/profile/{{ session['userid'] }}/{{ profile.profile_id }}'>{{ profile.name }}'s Profile</div>
             {% endfor %}
         {% endif %}
          <a href='/profile/new-profile'> Create new profile </a>
