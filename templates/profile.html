@@ -71,6 +71,21 @@
         </tr>
     {% endfor %}
     </table>
+
+    <form id="add-food-records" action="/profile/{{ profileid }}/addfood">
+        <input type="text" id='addfood' name='addfood'>
+        <input type='submit' value="Add New Food">
+    </form>
+    
+    <br>
+    <h3> AutoComplete Test</h3>
+    <form autocomplete="off" action="/action_page.php">
+        <div class="autocomplete" style="width:300px;">
+            <input id="myInput" type="text" name="myCountry" placeholder="Country">
+        </div>
+        <input type="submit">
+    </form>
+
 </div>
 </div>
 

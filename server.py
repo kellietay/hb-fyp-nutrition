@@ -115,7 +115,6 @@ def profile(userid, profileid):
     #1: retrieve profile id and birth date
 
     profile_obj = Profile.query.get(profileid)
-    print(profile_obj.birthdate)
 
     #2: use birthdate to calculate the correct Reference and Calorie tables
 
@@ -165,7 +164,13 @@ def profile(userid, profileid):
     
 
     #7: display the respective nutrients on the html
-    return render_template('profile.html', profileid=profileid, userid=userid, ref_obj=ref_obj, cal_obj=cal_obj, nutrient_dict=nutrient_dict, rec_obj=rec_obj, total_nutrients=total_nutrients)
+    return render_template('profile.html', profileid=profileid, 
+                                            userid=userid, 
+                                            ref_obj=ref_obj, 
+                                            cal_obj=cal_obj, 
+                                            nutrient_dict=nutrient_dict, 
+                                            rec_obj=rec_obj, 
+                                            total_nutrients=total_nutrients)
     
 
 @app.route('/profile/retrieve')
@@ -227,49 +232,18 @@ def retrieve_table():
     
 
 
-    #2: use birthdate to calculate the correct Reference and Calorie tables
-
-
-
-
-    rec_obj = Record.get_records_from_db(profileid, inputdate)
-    total_nutrients = Record.calculate_total(rec_obj)
-    nutrient_dict = {'carbohydrates': 'Carbohydrates (g)', 
-        'fiber': 'Total Fibre (g)', 
-        'fat': 'Fat (g)', 
-        'protein': 'Protein (g)', 
-        'vitA' : 'Vitamin A (μg)', 
-        'vitC' : 'Vitamin C (mg)', 
-        'vitD' : 'Vitamin D (mg)',
-        'vitE' : 'Vitamin E (mg)', 
-        'vitB6' : 'Vitamin B6 (mg)', 
-        'vitB12' : 'Vitamin B12 (μg)', 
-        'thiamin' : 'Thiamin (mg)', 
-        'riboflavin' : 'Riboflavin (mg)', 
-        'niacin' : 'Niacin (mg)', 
-        'folate' : 'Folate(μg)', 
-        'calcium': 'Calcium (mg)', 
-        'copper' : 'Copper (μg)', 
-        'iodine' : 'Iodine(μg)', 
-        'iron' : 'Iron (mg)', 
-        'magnesium' : 'Magnesium (mg)', 
-        'phosphorus' : 'Phosphorus (mg)', 
-        'selenium' : 'Selemium (μg)', 
-        'zinc' : 'Zinc (mg)', 
-        'potassium' : 'Potassium (g)',
-        'sodium' : 'Sodium (μg)', 
-        'chloride': 'Chloride (g)'}
-
-
 
 @app.route('/profile/new-profile')
 @login_required
 def newprofile():
+    """form page to add new profile"""
     return render_template('newprofile.html')
+
 
 @app.route('/profile/add-new-profile', methods = ['POST'])
 @login_required
 def addprofile():
+    """ process post request to add new profile to db"""
     name = request.form.get('name')
     birthdate = request.form.get('birthdate')
     gender = request.form.get('gender')
@@ -289,6 +263,29 @@ def addprofile():
     profile_obj = Profile.query.filter(Profile.name==name).filter(Profile.user_id==session.get('userid')).first()
 
     return redirect('/profile/{}/{}'.format(session['userid'], profile_obj.profile_id))
+
+
+@app.route('/profile/<profileid>/addfood')
+@login_required
+def addfood(profileid):
+    foodname = request.args.get("addfood")
+    headers = {"x-app-id":"4df5cc3a",
+                "x-app-key": "05fda724b6e208054c3a62bf6bab320f"}
+    payload = {"query": foodname }
+
+    r = requests.get('https://trackapi.nutritionix.com/v2/search/instant',
+                headers=headers,
+                params=payload)
+
+    json_data = json.loads(r.text)
+
+    lst=[]
+    for item in json_data['common']:
+        lst.append(item["food_name"])
+        print(lst)
+
+    return jsonify(lst)
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
