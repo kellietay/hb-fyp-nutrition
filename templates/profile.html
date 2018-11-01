@@ -54,36 +54,39 @@
 
 <div>
 <h1>Foods eaten today</h1>
+    <div id="button-nav">
     <table>
         <tr>
             <th>Food</th>
             <th>Quantity</th>
             <th>Unit </th>
             <th>Serving Weight (g)</th>
+            <th></th>
         </tr>
-
     {%for item in rec_obj %}
-        <tr>
-            <td>{{ item.food.food_name }}</td>
-            <td>{{ item.serving_qty }}</td>
-            <td>{{ item.serving_unit }}</td>
-            <td>{{ item.serving_weight_grams }}</td>
+        <tr id="food-table-{{item.record_id}}">
+            <form id="food-form-{{item.record_id}}">
+                <td>{{ item.food.food_name }}</td>
+                <td><div id="food-form-quantity1-{{item.record_id}}" class="quantity">{{ item.serving_qty }}</div><div style="display: none;" id="food-form-quantity2-{{item.record_id}}" class="editquantity"><input type=text placeholder={{item.serving_qty}}></div></td>
+                <td>{{ item.serving_unit }} </td>
+                <td>{{ item.serving_weight_grams }}</td>
+                <td>
+                    <button id="food-form-button-edit-{{item.record_id}}" class="editbuttons" name="record_id" type="submit" value="{{item.record_id}}">Edit</button>
+                    <button style="display: none;" id="food-form-button-submit-{{item.record_id}}" type="submit" value="{{item.record_id}}">Submit</button>
+                    <button style="display: none;" id="food-form-button-cancel-{{item.record_id}}" type="submit" value="{{item.record_id}}">Cancel</button>
+
+                </td>
+            </form>
         </tr>
     {% endfor %}
     </table>
-
-    <form id="add-food-records" action="/profile/{{ profileid }}/addfood">
-        <input type="text" id='addfood' name='addfood'>
-        <input type='submit' value="Add New Food">
-    </form>
-
-    <br>
-    <h3> AutoComplete Test</h3>
-    <form autocomplete="off" action="/action_page.php">
+    </div>
+    <form autocomplete="off" id="addfoodform">
         <div class="autocomplete" style="width:300px;">
-            <input id="myInput" type="text" name="myCountry" placeholder="Country">
+            <input id="myInput" type="text" name="myCountry" placeholder="Search Foods">
+            <input type="submit" id="addfoodsubmit" value="Add New Food">
         </div>
-        <input type="submit">
+ 
     </form>
     <input id="acList" type="hidden" name="acList" value="none">
 </div>

@@ -1,3 +1,5 @@
+/// DATE EVENT LISTENER ///
+
 function replaceTables(results){
     var status = results;
     $('#profiletables').html(status);
@@ -21,17 +23,63 @@ function initReload(){
 }
 
 initReload();
-console.log("please run");
 
 
+/// Adding ability to modify Records ///
+function initButtons(){
+console.log("initButtons is on")
+$('.editbuttons').on('click', function(evt){
+    evt.preventDefault();
+    console.log(evt.target.value);
+    var recordvalue;
+    recordvalue = evt.target.value;
+    var quantity1 = "#food-form-quantity1-"+recordvalue;
+    var quantity2 = "#food-form-quantity2-"+recordvalue;
+    $(quantity1).hide();
+    $(quantity2).show();
+    var submitbutton = "#food-form-button-submit-"+recordvalue;
+    var cancelbutton = "#food-form-button-cancel-"+recordvalue;
+    var editbutton = "#food-form-button-edit-"+recordvalue;
+    $(submitbutton).show();
+    $(cancelbutton).show();
+    $(editbutton).hide();
 
-//////
-//Retreveing Auto Complete list via AJAX:
+    function hideButtons(){
+        $(submitbutton).hide();
+        $(cancelbutton).hide();
+        $(editbutton).show();
+        $(".editquantity").hide();
+        $(".quantity").show();
+        $(submitbutton).off();
+        $(cancelbutton).off();
+    }
 
-function retrieveACList(){
-    console.log("retrieving Autocomplete List");
-    $('#')
-}
+    $(submitbutton).on('click',function(event){
+        event.preventDefault();
+        console.log("submit button is clicked");
+        $(quantity1).text($(quantity2).children().val());
+        hideButtons();
+        const formData = {
+        recordid: event.target.value,
+        newquantity: $(quantity2).children().val()
+        }
+        console.log(formData)
+
+        $.post("/profile/updaterecords", formData, function(results){
+            console.log(results);
+        });
+        
+    })
+
+    $(cancelbutton).on('click',function(event){
+        event.preventDefault();
+        console.log("cancel button is clicked")
+        hideButtons()
+    })
+});}
+
+
+initButtons()
 
 /////////////////////////////////////////
 // Adding AUTOCOMPLETE
@@ -58,11 +106,12 @@ function autocomplete(inp, arr) {
 
       var happylist;
 
-      $.get('/profile/'+$('#profileid').val()+'/addfood',{addfood: inp.value}, lstofresults)
+      $.get('/profile/getfoodlistfromapi',{addfood: inp.value}, lstofresults)
 
       function lstofresults(results){
         const lstResults = results
         console.log(lstResults);
+
         happylist = lstResults; 
 
             for (i = 0; i < happylist.length; i++) {
@@ -76,7 +125,7 @@ function autocomplete(inp, arr) {
                   /*insert a input field that will hold the current array item's value:*/
                   b.innerHTML += "<input type='hidden' value='" + happylist[i] + "'>";
                   /*execute a function when someone clicks on the item value (DIV element):*/
-                      b.addEventListener("click", function(e) {
+                  b.addEventListener("click", function(e) {
                       /*insert the value for the autocomplete text field:*/
                       inp.value = this.getElementsByTagName("input")[0].value;
                       /*close the list of autocompleted values,
@@ -137,9 +186,9 @@ function autocomplete(inp, arr) {
     for (var i = 0; i < x.length; i++) {
       if (elmnt != x[i] && elmnt != inp) {
       x[i].parentNode.removeChild(x[i]);
+        }
+      }
     }
-  }
-}
 /*execute a function when someone clicks in the document:*/
 document.addEventListener("click", function (e) {
     closeAllLists(e.target);
@@ -147,3 +196,26 @@ document.addEventListener("click", function (e) {
 }
 
 autocomplete(document.getElementById("myInput"), ['a','b','c','cat','caterpillar'])
+
+
+//*execute a function when the selection has been made in $('#myInput')*/
+function submitFoods(){
+    $('#addfoodform').on('submit', function(e) {
+        e.preventDefault();
+        const formData = {
+            inputfood: $('#myInput').val(),
+            profileid: $('#profileid').val()
+        };
+        $.post("/profile/addfood", formData, updateFoodsTable);
+        console.log("ran AJAX POST to Foods")
+    });
+}
+
+function updateFoodsTable(results){
+    var status = results;
+    // $('#profiletables').html(status);
+    console.log(status)
+    console.log("Finished replaceTables");
+}
+
+submitFoods();

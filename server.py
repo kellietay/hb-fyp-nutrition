@@ -200,7 +200,7 @@ def retrieve_table():
         'protein': 'Protein (g)', 
         'vitA' : 'Vitamin A (μg)', 
         'vitC' : 'Vitamin C (mg)', 
-        'vitD' : 'Vitamin D (mg)',
+        'vitD' : 'Vitamin D (μg)',
         'vitE' : 'Vitamin E (mg)', 
         'vitB6' : 'Vitamin B6 (mg)', 
         'vitB12' : 'Vitamin B12 (μg)', 
@@ -210,15 +210,13 @@ def retrieve_table():
         'folate' : 'Folate(μg)', 
         'calcium': 'Calcium (mg)', 
         'copper' : 'Copper (μg)', 
-        'iodine' : 'Iodine(μg)', 
         'iron' : 'Iron (mg)', 
         'magnesium' : 'Magnesium (mg)', 
         'phosphorus' : 'Phosphorus (mg)', 
         'selenium' : 'Selemium (μg)', 
         'zinc' : 'Zinc (mg)', 
         'potassium' : 'Potassium (g)',
-        'sodium' : 'Sodium (μg)', 
-        'chloride': 'Chloride (g)'}
+        'sodium' : 'Sodium (μg)'}
 
     #5: retrieve the Records from the record db for this profile and today's date
 
@@ -265,9 +263,9 @@ def addprofile():
     return redirect('/profile/{}/{}'.format(session['userid'], profile_obj.profile_id))
 
 
-@app.route('/profile/<profileid>/addfood')
+@app.route('/profile/getfoodlistfromapi')
 @login_required
-def addfood(profileid):
+def getfoodlistfromapi():
     foodname = request.args.get("addfood")
     headers = {"x-app-id":"4df5cc3a",
                 "x-app-key": "05fda724b6e208054c3a62bf6bab320f"}
@@ -286,6 +284,103 @@ def addfood(profileid):
 
     return jsonify(lst)
 
+
+
+@app.route('/profile/addfood', methods = ['POST'])
+@login_required
+def addfood():
+    foodname = request.form.get("inputfood","applesauce")
+    profileid = request.form.get("profileid", 1)
+
+    food_object = Food.query.filter(Food.food_name == foodname).first()
+
+    if not food_object:
+
+        print("{} does not exist in SQL. Creating Food".format(foodname))
+
+        headers = {"x-app-id":"4df5cc3a",
+                    "x-app-key": "05fda724b6e208054c3a62bf6bab320f",
+                    "Content-Type": "application/json"}
+        data = {"query": foodname }
+
+        r = requests.post('https://trackapi.nutritionix.com/v2/natural/nutrients',
+                    headers=headers,
+                    json=data)
+
+        json_data = json.loads(r.text).get("foods")[0]
+        nutrient_data = {}
+
+        for item in json_data.get("full_nutrients"):
+            nutrient_data["attr_{}".format(item['attr_id'])] = item['value']
+
+        altr_measures = {}
+        if json_data.get("alt_measures"):
+            for item in json_data.get("alt_measures"):
+                altr_measures[item["measure"]] = item["serving_weight"]
+
+            str_alt_measures = ", ".join(["{}:{}".format(key, value) for (key, value) in altr_measures.items()])
+        else:
+            str_alt_measures = ""
+
+        test1 = Food(food_name = json_data.get("food_name"),
+            brand_name = None,
+            serving_qty = json_data.get("serving_qty"),
+            serving_unit = json_data.get("serving_unit"),
+            serving_weight_grams = json_data.get("serving_weight_grams"),
+            calories = json_data.get("nf_calories", 0),
+            carbohydrates = json_data.get("nf_total_carbohydrate", 0),
+            fiber = json_data.get("nf_dietary_fiber", 0),
+            fat = json_data.get("nf_total_fat", 0),
+            protein = json_data.get("nf_protein", 0),
+            vitA = nutrient_data.get("attr_320", 0),
+            vitC = nutrient_data.get("attr_401", 0),
+            vitD = nutrient_data.get("attr_328", 0),
+            vitE = nutrient_data.get("attr_323", 0),
+            vitB6 = nutrient_data.get("attr_415", 0),
+            vitB12 = nutrient_data.get("attr_418", 0),
+            thiamin = nutrient_data.get("attr_404", 0),
+            riboflavin = nutrient_data.get("attr_405", 0),
+            niacin = nutrient_data.get("attr_406", 0),
+            folate = nutrient_data.get("attr_417", 0),
+            calcium = nutrient_data.get("attr_301", 0),
+            copper = nutrient_data.get("attr_312", 0),
+            iodine = 0,
+            iron =  nutrient_data.get("attr_303", 0),
+            magnesium = nutrient_data.get("attr_304", 0),
+            phosphorus = nutrient_data.get("attr_305", 0),
+            selenium = nutrient_data.get("attr_317", 0),
+            zinc = nutrient_data.get("attr_309", 0),
+            potassium = json_data.get("nf_potassium"),
+            sodium = nutrient_data.get("attr_307", 0),
+            chloride = 0,
+            alt_measures = str_alt_measures)
+
+        db.session.add(test1)
+        db.session.commit()
+
+        print(test1.food_name)
+
+    else:
+        print(food_object)
+        print("FOOD IS FOUND. DONT MESS UP")
+
+    return "some text"
+
+
+@app.route('/profile/updaterecords', methods=['POST'])
+@login_required
+def addrecord():
+    recordid = request.form.get("recordid")
+    newquantity = request.form.get("newquantity")
+
+    record_obj = Record.query.get(recordid)
+
+    if record_obj and newquantity:
+        record_obj.serving_qty = float(newquantity)
+        db.session.commit()
+        return "succesfully updated {} to record {}".format(newquantity, recordid)
+    else:
+        return "please check code"
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
