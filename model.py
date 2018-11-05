@@ -144,7 +144,7 @@ class Food(db.Model):
     potassium = db.Column(db.Float, nullable = False)
     sodium = db.Column(db.Float, nullable = False)
     chloride = db.Column(db.Float, nullable = False)
-    alt_measures = db.Column(db.String(200), nullable=True)
+    alt_measures = db.Column(db.String(500), nullable=True)
 
     def __repr__(self):
         """Provide helpful representation when printed."""

@@ -12,7 +12,7 @@
         {% if profiles is defined %}
         <h3>Profiles</h3>
             {% for profile in profiles %}
-            <a href='/{{ session['userid'] }}/{{ profile.profile_id }}'>{{ profile.name }}'s Profile</div>
+            <a href='/{{ session['userid'] }}/{{ profile.profile_id }}'>{{ profile.name }}'s Profile
             {% endfor %}
         {% endif %}
         <a href='/profile/new-profile'> Create new profile </a>
@@ -26,8 +26,8 @@
 
 <div>
     <form id="date-form">
-        Date: <input type='date' name='date' id="inputdate">
-        <input type='submit' id='submit'>
+        Date: <input type='date' name='date' id="inputdate" value={{ input_date }}>
+        <input type='submit' id='datesubmit'>
     </form>
         
 </div>
@@ -52,10 +52,9 @@
     {% endfor %}
 </table>
 
-<div>
 <h1>Foods eaten today</h1>
-    <div id="button-nav">
     <table>
+        <thead>
         <tr>
             <th>Food</th>
             <th>Quantity</th>
@@ -63,24 +62,31 @@
             <th>Serving Weight (g)</th>
             <th></th>
         </tr>
-    {%for item in rec_obj %}
-        <tr id="food-table-{{item.record_id}}">
-            <form id="food-form-{{item.record_id}}">
+        </thead>
+
+        <tbody id="records-table">
+        {%for item in rec_obj %}
+            <tr id="food-table-{{item.record_id}}">
                 <td>{{ item.food.food_name }}</td>
-                <td><div id="food-form-quantity1-{{item.record_id}}" class="quantity">{{ item.serving_qty }}</div><div style="display: none;" id="food-form-quantity2-{{item.record_id}}" class="editquantity"><input type=text placeholder={{item.serving_qty}}></div></td>
+                <td>
+                    <div id="food-form-quantity1-{{item.record_id}}" class="quantity">{{ item.serving_qty }}</div>
+
+                    <div style="display: none;" id="food-form-quantity2-{{item.record_id}}" class="editquantity"><input type=text placeholder={{item.serving_qty}}></div>
+                </td>
                 <td>{{ item.serving_unit }} </td>
                 <td>{{ item.serving_weight_grams }}</td>
                 <td>
-                    <button id="food-form-button-edit-{{item.record_id}}" class="editbuttons" name="record_id" type="submit" value="{{item.record_id}}">Edit</button>
-                    <button style="display: none;" id="food-form-button-submit-{{item.record_id}}" type="submit" value="{{item.record_id}}">Submit</button>
+                    <button id="food-form-button-edit-{{item.record_id}}" class="editbuttons" name="record_id" type="submit" value="{{item.record_id}}">Modify</button>
+                    <button style="display: none;" id="food-form-button-submit-{{item.record_id}}" type="submit" value="{{item.record_id}}">Save</button>
+                    <button style="display: none;" id="food-form-button-delete-{{item.record_id}}" type="submit" value="{{item.record_id}}">Delete</button>
                     <button style="display: none;" id="food-form-button-cancel-{{item.record_id}}" type="submit" value="{{item.record_id}}">Cancel</button>
 
                 </td>
-            </form>
-        </tr>
-    {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
     </table>
-    </div>
+</div>
     <form autocomplete="off" id="addfoodform">
         <div class="autocomplete" style="width:300px;">
             <input id="myInput" type="text" name="myCountry" placeholder="Search Foods">
@@ -89,8 +95,7 @@
  
     </form>
     <input id="acList" type="hidden" name="acList" value="none">
-</div>
-</div>
+<br><br><br><br><br><br>
 
 <script src="/static/profile.js"></script>
 
@@ -98,31 +103,3 @@
 
 
 
-<!-- <script>
-
-function replaceTables(results){
-    var status = results;
-    $('#profiletables').html(status);
-    console.log("Finished replaceTables");
-}
-
-function updateTables(evt){
-    evt.preventDefault()
-    const formData = {
-            inputdate: $('#inputdate').val(),
-            profileid: $('#profileid').val()
-        }
-
-    $.get("/profile/retrieve", formData, replaceTables);
-    console.log("ran AJAX");
-}
-
-function initReload(){
-    console.log("initReload is on");
-    $('#date-form').on('submit', updateTables);
-}
-
-initReload();
-console.log("please run");
-
-</script> -->

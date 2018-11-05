@@ -1,5 +1,5 @@
 /// DATE EVENT LISTENER ///
-
+/// updates the table and records when a new date is submitted //
 function replaceTables(results){
     var status = results;
     $('#profiletables').html(status);
@@ -19,13 +19,14 @@ function updateTables(evt){
 
 function initReload(){
     console.log("initReload is on");
-    $('#date-form').on('submit', updateTables);
+    $('#datesubmit').on('click', updateTables);
 }
 
 initReload();
 
 
-/// Adding ability to modify Records ///
+/// Records: Edit, Submit, Cancel Event Listeners ///
+
 function initButtons(){
 console.log("initButtons is on")
 $('.editbuttons').on('click', function(evt){
@@ -40,13 +41,16 @@ $('.editbuttons').on('click', function(evt){
     var submitbutton = "#food-form-button-submit-"+recordvalue;
     var cancelbutton = "#food-form-button-cancel-"+recordvalue;
     var editbutton = "#food-form-button-edit-"+recordvalue;
+    var deletebutton = "#food-form-button-delete-"+recordvalue;
     $(submitbutton).show();
     $(cancelbutton).show();
+    $(deletebutton).show();
     $(editbutton).hide();
 
     function hideButtons(){
         $(submitbutton).hide();
         $(cancelbutton).hide();
+        $(deletebutton).hide();
         $(editbutton).show();
         $(".editquantity").hide();
         $(".quantity").show();
@@ -61,13 +65,14 @@ $('.editbuttons').on('click', function(evt){
         hideButtons();
         const formData = {
         recordid: event.target.value,
-        newquantity: $(quantity2).children().val()
+        newquantity: $(quantity2).children().val(),
+        inputdate: $('#inputdate').val(),
+        profileid: $('#profileid').val(),
+        type: "update"
         }
         console.log(formData)
 
-        $.post("/profile/updaterecords", formData, function(results){
-            console.log(results);
-        });
+        $.post("/profile/updaterecords", formData, replaceTables);
         
     })
 
@@ -76,8 +81,23 @@ $('.editbuttons').on('click', function(evt){
         console.log("cancel button is clicked")
         hideButtons()
     })
-});}
 
+    $(deletebutton).on('click', function(event){
+      event.preventDefault();
+      console.log("delete button is clicked");
+
+      const formData = {
+        recordid: event.target.value,
+        newquantity: $(quantity2).children().val(),
+        inputdate: $('#inputdate').val(),
+        profileid: $('#profileid').val(),
+        type: "delete"
+        }
+
+      $.post("/profile/updaterecords", formData, replaceTables);
+    })
+
+});}
 
 initButtons()
 
@@ -200,22 +220,24 @@ autocomplete(document.getElementById("myInput"), ['a','b','c','cat','caterpillar
 
 //*execute a function when the selection has been made in $('#myInput')*/
 function submitFoods(){
-    $('#addfoodform').on('submit', function(e) {
+    $('#addfoodsubmit').on('click', function(e) {
         e.preventDefault();
         const formData = {
             inputfood: $('#myInput').val(),
-            profileid: $('#profileid').val()
+            profileid: $('#profileid').val(),
+            inputdate: $('#inputdate').val()
         };
         $.post("/profile/addfood", formData, updateFoodsTable);
         console.log("ran AJAX POST to Foods")
+
     });
 }
 
 function updateFoodsTable(results){
     var status = results;
-    // $('#profiletables').html(status);
-    console.log(status)
-    console.log("Finished replaceTables");
+    // $(status).insertBefore($("#update-food-AJAX"));
+    $("#records-table").append(status)
+    console.log("re-updated Foods Table");
 }
 
 submitFoods();

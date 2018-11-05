@@ -112,57 +112,8 @@ def logout():
 @login_required
 def profile(userid, profileid):
     
-    #1: retrieve profile id and birth date
-
-    profile_obj = Profile.query.get(profileid)
-
-    #2: use birthdate to calculate the correct Reference and Calorie tables
-
-    age = (datetime.date.today() - profile_obj.birthdate).days / 365
-
-    ref_obj = Reference.query.filter(Reference.min_age < age).filter(Reference.max_age > age).first()
-
-    cal_obj = Calorie.query.filter(Calorie.min_age < age).filter(Calorie.max_age > age).first()
-
-    #3: save the Reference and Calorie tables to the db
-
-
-
-    #4: retrieve the Reference and Calorie tables and display on the html page
-
-    nutrient_dict = {'carbohydrates': 'Carbohydrates (g)', 
-        'fiber': 'Total Fibre (g)', 
-        'fat': 'Fat (g)', 
-        'protein': 'Protein (g)', 
-        'vitA' : 'Vitamin A (μg)', 
-        'vitC' : 'Vitamin C (mg)', 
-        'vitD' : 'Vitamin D (mg)',
-        'vitE' : 'Vitamin E (mg)', 
-        'vitB6' : 'Vitamin B6 (mg)', 
-        'vitB12' : 'Vitamin B12 (μg)', 
-        'thiamin' : 'Thiamin (mg)', 
-        'riboflavin' : 'Riboflavin (mg)', 
-        'niacin' : 'Niacin (mg)', 
-        'folate' : 'Folate(μg)', 
-        'calcium': 'Calcium (mg)', 
-        'copper' : 'Copper (μg)', 
-        'iodine' : 'Iodine(μg)', 
-        'iron' : 'Iron (mg)', 
-        'magnesium' : 'Magnesium (mg)', 
-        'phosphorus' : 'Phosphorus (mg)', 
-        'selenium' : 'Selemium (μg)', 
-        'zinc' : 'Zinc (mg)', 
-        'potassium' : 'Potassium (g)',
-        'sodium' : 'Sodium (μg)', 
-        'chloride': 'Chloride (g)'}
-
-    #5: retrieve the Records from the record db for this profile and today's date
-
-    rec_obj = Record.get_records_from_db(profileid, "2018-10-07")
-
-    total_nutrients = Record.calculate_total(rec_obj)
+    notused, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate =refreshtable(profileid)
     
-
     #7: display the respective nutrients on the html
     return render_template('profile.html', profileid=profileid, 
                                             userid=userid, 
@@ -170,15 +121,17 @@ def profile(userid, profileid):
                                             cal_obj=cal_obj, 
                                             nutrient_dict=nutrient_dict, 
                                             rec_obj=rec_obj, 
-                                            total_nutrients=total_nutrients)
+                                            total_nutrients=total_nutrients,
+                                            input_date=inputdate)
     
 
-@app.route('/profile/retrieve')
-@login_required
-def retrieve_table():
+def refreshtable(profileid = None, inputdate = None):
 
-    profileid = request.args.get('profileid')
-    inputdate = request.args.get('inputdate')
+    if not profileid:
+        profileid = request.args.get('profileid')
+    
+    if not inputdate:
+        inputdate = request.args.get('inputdate', datetime.date.today())
 
     profile_obj = Profile.query.get(profileid)
 
@@ -187,12 +140,6 @@ def retrieve_table():
     ref_obj = Reference.query.filter(Reference.min_age < age).filter(Reference.max_age > age).first()
 
     cal_obj = Calorie.query.filter(Calorie.min_age < age).filter(Calorie.max_age > age).first()
-
-    #3: save the Reference and Calorie tables to the db
-
-
-
-    #4: retrieve the Reference and Calorie tables and display on the html page
 
     nutrient_dict = {'carbohydrates': 'Carbohydrates (g)', 
         'fiber': 'Total Fibre (g)', 
@@ -218,18 +165,28 @@ def retrieve_table():
         'potassium' : 'Potassium (g)',
         'sodium' : 'Sodium (μg)'}
 
-    #5: retrieve the Records from the record db for this profile and today's date
-
     rec_obj = Record.get_records_from_db(profileid, inputdate)
 
     total_nutrients = Record.calculate_total(rec_obj)
-    
 
-    #7: display the respective nutrients on the html
-    return render_template('profile_ajax.html', profileid=profileid, ref_obj=ref_obj, cal_obj=cal_obj, nutrient_dict=nutrient_dict, rec_obj=rec_obj, total_nutrients=total_nutrients)
-    
+    return profileid, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate
+                            
 
+@app.route('/profile/retrieve')
+@login_required
+def retrieve_table():
 
+    profileid = request.args.get('profileid')
+    inputdate = request.args.get('inputdate')
+
+    profileid1, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate1 = refreshtable(profileid, inputdate)
+
+    return render_template('profile_ajax.html', profileid=profileid, 
+                                                ref_obj=ref_obj, 
+                                                cal_obj=cal_obj, 
+                                                nutrient_dict=nutrient_dict, 
+                                                rec_obj=rec_obj, 
+                                                total_nutrients=total_nutrients)
 
 @app.route('/profile/new-profile')
 @login_required
@@ -291,6 +248,7 @@ def getfoodlistfromapi():
 def addfood():
     foodname = request.form.get("inputfood","applesauce")
     profileid = request.form.get("profileid", 1)
+    inputdate = request.form.get("inputdate", "2018-10-07")
 
     food_object = Food.query.filter(Food.food_name == foodname).first()
 
@@ -358,13 +316,29 @@ def addfood():
         db.session.add(test1)
         db.session.commit()
 
-        print(test1.food_name)
+        print(test1.food_id)
 
     else:
         print(food_object)
         print("FOOD IS FOUND. DONT MESS UP")
 
-    return "some text"
+    newfood = Food.query.filter(Food.food_name == foodname).first()
+    print(newfood)
+
+    newrecord = Record(profile_id=profileid, 
+                        food_id=newfood.food_id, 
+                        date=inputdate,
+                        serving_qty=0,
+                        serving_unit=newfood.serving_unit,
+                        serving_weight_grams=newfood.serving_weight_grams)
+
+    db.session.add(newrecord)
+    db.session.commit()
+
+    print(newrecord.record_id)
+
+    return render_template("record_ajax.html", item=newrecord)
+    # need to replace this with the profile/retrieve
 
 
 @app.route('/profile/updaterecords', methods=['POST'])
@@ -372,15 +346,32 @@ def addfood():
 def addrecord():
     recordid = request.form.get("recordid")
     newquantity = request.form.get("newquantity")
+    profileid = request.form.get("profileid")
+    inputdate = request.form.get("inputdate")
+    updatetype = request.form.get("type")
 
     record_obj = Record.query.get(recordid)
 
-    if record_obj and newquantity:
+    if record_obj and newquantity and updatetype == "update":
         record_obj.serving_qty = float(newquantity)
         db.session.commit()
-        return "succesfully updated {} to record {}".format(newquantity, recordid)
+
+    elif record_obj and updatetype == "delete":
+
+        db.session.delete(record_obj)
+        db.session.commit()
+
     else:
         return "please check code"
+
+    profileid1, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate1 = refreshtable(profileid, inputdate)
+
+    return render_template('profile_ajax.html', profileid=profileid, 
+                                                ref_obj=ref_obj, 
+                                                cal_obj=cal_obj, 
+                                                nutrient_dict=nutrient_dict, 
+                                                rec_obj=rec_obj, 
+                                                total_nutrients=total_nutrients)
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
