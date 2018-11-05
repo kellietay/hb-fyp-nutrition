@@ -1,0 +1,24 @@
+            <tr id="food-table-{{item.record_id}}">
+                <td>{{ item.food.food_name }}</td>
+                <td>
+                    <div id="food-form-quantity1-{{item.record_id}}" class="quantity">{{ item.serving_qty }}</div>
+
+                    <div style="display: none;" id="food-form-quantity2-{{item.record_id}}" class="editquantity"><input type=text placeholder={{item.serving_qty}}></div>
+                </td>
+                <td>{{ item.serving_unit }} </td>
+                <td>{{ item.serving_weight_grams }}</td>
+                <td>
+                    <button id="food-form-button-edit-{{item.record_id}}" class="editbuttons" name="record_id" type="submit" value="{{item.record_id}}">Modify</button>
+                    <button style="display: none;" id="food-form-button-submit-{{item.record_id}}" type="submit" value="{{item.record_id}}">Save</button>
+                    <button style="display: none;" id="food-form-button-delete-{{item.record_id}}" type="submit" value="{{item.record_id}}">Delete</button>
+                    <button style="display: none;" id="food-form-button-cancel-{{item.record_id}}" type="submit" value="{{item.record_id}}">Cancel</button>
+
+                </td>
+            </tr>
+    
+<script>
+    $("body").find("*").each(function() {
+    $(this).off("click");
+});
+</script> 
+   <script src="/static/profile.js"></script>
