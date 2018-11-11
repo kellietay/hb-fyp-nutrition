@@ -20,6 +20,8 @@ from copy import deepcopy
 
 import json
 
+import secrets
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -32,7 +34,7 @@ def login_required(f):
 app = Flask(__name__)
 
 # Required to use Flask sessions and the debug toolbar
-app.secret_key = "ABC"
+app.secret_key = secrets.APP_PASSWORD
 
 # Normally, if you use an undefined variable in Jinja2, it fails
 # silently. This is horrible. Fix this so that, instead, it raises an
@@ -265,8 +267,8 @@ def addprofile():
 @login_required
 def getfoodlistfromapi():
     foodname = request.args.get("addfood")
-    headers = {"x-app-id":"4df5cc3a",
-                "x-app-key": "05fda724b6e208054c3a62bf6bab320f"}
+    headers = {"x-app-id": secrets.NUTRITIONIX_ID,
+                "x-app-key": secrets.NUTRITIONIX_KEY}
     payload = {"query": foodname }
 
     r = requests.get('https://trackapi.nutritionix.com/v2/search/instant',
@@ -297,8 +299,8 @@ def addfood():
 
         print("{} does not exist in SQL. Creating Food".format(foodname))
 
-        headers = {"x-app-id":"4df5cc3a",
-                    "x-app-key": "05fda724b6e208054c3a62bf6bab320f",
+        headers = {"x-app-id": secrets.NUTRITIONIX_ID,
+                    "x-app-key": secrets.NUTRITIONIX_KEY,
                     "Content-Type": "application/json"}
         data = {"query": foodname }
 
