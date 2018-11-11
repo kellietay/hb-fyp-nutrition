@@ -13,13 +13,13 @@ function updateTables(evt){
             profileid: $('#profileid').val()
         }
 
-    $.post("/profile/retrieve", formData, replaceTables);
+    $.get("/profile/retrieve", formData, replaceTables);
     console.log("ran AJAX");
 }
 
 function initReload(){
     console.log("initReload is on");
-    $('#datesubmit').on('click', updateTables);
+    $('#dateform').on('click', updateTables);
 }
 
 initReload();
@@ -241,3 +241,42 @@ function updateFoodsTable(results){
 }
 
 submitFoods();
+
+//////////////////////
+
+// var ctx = document.getElementById('myChart').getContext('2d');
+// var chart = new Chart(ctx, {
+//     // The type of chart we want to create
+//     type: 'line',
+
+//     // The data for our dataset
+//     data: {
+//         labels: ["January", "February", "March", "April", "May", "June", "July"],
+//         datasets: [{
+//             label: "My First dataset",
+//             backgroundColor: 'rgb(255, 99, 132)',
+//             borderColor: 'rgb(255, 99, 132)',
+//             data: [0, 10, 5, 2, 20, 30, 45],
+//         }]
+//     },
+//     // Configuration options go here
+//     options: {}
+// });
+
+
+var atx = document.getElementById('myPieChart').getContext('2d');
+var chart = new Chart(atx, {
+    // The type of chart we want to create
+    type: 'doughnut',
+
+    // The data for our dataset
+    data: {
+        labels: ['Calories', "remaining"],
+        datasets: [{
+            label: "My First dataset",
+            backgroundColor: 'rgb(255, 99, 132)',
+            data: [$("#totalcalories").val(), 1200],
+        }]
+    },
+    options: {}
+});

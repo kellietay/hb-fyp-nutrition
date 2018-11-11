@@ -1,7 +1,97 @@
 {% extends 'base.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
+{% endblock %}
+
 {% block content %}
 
-<h1>Homepage</h1>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="height:100px">
+  <a class="navbar-brand" href="#">NutritionRabbit</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarColor01">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+      </li>
+{% if 'userid' in session %}
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Profiles
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+    {% if profiles is defined %}
+        {% for profile in profiles %}
+          <a class="dropdown-item" href='/profile/{{ session['userid'] }}/{{ profile.profile_id }}'>{{ profile.name }}'s Profile</a>
+        {% endfor %}
+        {% endif %}
+        <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href='/profile/new-profile'>Create new profile</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">About</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav flex-row ml-md-auto">
+        <li class="nav-item active">
+        <a class="nav-link"> Welcome, {{ session['fname'] }}</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link">|</a>
+        </li>
+        <li class="nav-item active">
+        <a class="nav-link" href="/logout">Logout</a>
+        </li>
+    </ul>
+    {% else %}
+    </ul>
+      <ul class="navbar-nav flex-row ml-md-auto">
+        <li class="nav-item active">
+        <a class="nav-link"> Welcome, Guest</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link">|</a>
+        </li>
+        <li class="nav-item active">
+        <a class="nav-link" href="/login">Login</a>
+        </li>
+        <li class="nav-item active">
+        <a class="nav-link" href="/register">or</a>
+        </li>
+        <li class="nav-item active">
+        <a class="nav-link" href="/register">Register</a>
+        </li>
+      </ul>
+    {% endif %}
+  </div>
+</nav>
+
+
+<section id="homepagebackground" style="height:600px">
+
+<div class="jumbotron" id="opacity" style="height:600px">
+
+  <h1 class="display-3">Welcome to NutritionRabbit</h1>
+  <p class="lead display-4">You are what you eat.</p>
+  <hr class="display-5 my-4">
+  <p style="color: white">Take control. Track Calories, breakdown ingredients. Know whats going into your body.</p>
+  <p class="lead">
+    <a class="btn btn-primary btn-lg" href="/login" role="button">Login</a>
+    <a class="btn btn-danger btn-lg" href="/register" role="button">Register</a>
+  </p>
+</div>
+
+</section>
+<!-- 
+<h1>Welcome to NutritionRabbit</h1>
+<h3>Please Login or Register to get started</h3>
+
+<p>NutritionRabbit is a web application developed by Kellie Tay, a software engineering graduate from Hackbright. NutritionRabbit allows you track foods eaten and breaks down the foods into macro and micro nutrients and elements and compares them to the dietary reference intake values published by the Food and Nutrition Board</p>
+
+<p>NutritionRabbit uses Python libraries Flask, SQLAlchemy, Postgresql, as the backend and Javascript, CSS, HTML on the front end. Nutrition information is obtained from the Nutritionix API</p>
 
 <div>
     {% if 'userid' in session %}
@@ -27,4 +117,4 @@
 
 <div>
 
-</div>
+</div> -->

@@ -1,37 +1,262 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Profile</h1>
 
 
-<div>
-    {% if 'userid' in session %}
-        <h2> Welcome, {{ session['fname'] }}</h2>
-        <input id="profileid" type="hidden" name="profileid" value={{ profileid }}>
-        <br><br>
-        {% if profiles is defined %}
-        <h3>Profiles</h3>
-            {% for profile in profiles %}
-            <a href='/{{ session['userid'] }}/{{ profile.profile_id }}'>{{ profile.name }}'s Profile
-            {% endfor %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <a class="navbar-brand" href="#">NutritionRabbit</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarColor01">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+      </li>
+{% if 'userid' in session %}
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Profiles
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+    {% if profiles is defined %}
+        {% for profile in profiles %}
+          <a class="dropdown-item" href='/profile/{{ session['userid'] }}/{{ profile.profile_id }}'>{{ profile.name }}'s Profile</a>
+        {% endfor %}
         {% endif %}
-        <a href='/profile/new-profile'> Create new profile </a>
-        <br><br>
-        <a href='/logout'> logout </a>
+        <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href='/profile/new-profile'>Create new profile</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">About</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav flex-row ml-md-auto">
+        <li class="nav-item active">
+        <a class="nav-link"> Welcome, {{ session['fname'] }}</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link">|</a>
+        </li>
+        <li class="nav-item active">
+        <a class="nav-link" href="/logout">Logout</a>
+        </li>
+    </ul>
     {% else %}
-        <a href='/login'> login </a>
-
+    </ul>
+      <ul class="navbar-nav flex-row ml-md-auto">
+        <li class="nav-item active">
+        <a class="nav-link"> Welcome, Guest</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link">|</a>
+        </li>
+        <li class="nav-item active">
+        <a class="nav-link" href="/login">Login</a>
+        </li>
+      </ul>
     {% endif %}
+  </div>
+</nav>
+
+<!-- <div id="container-fluid">
+<div id="row">
+<div id="col-sm-2">
+<div id="wrapper">
+    <div id="sidebar">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Active</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#">Disabled</a>
+          </li>
+        </ul>
+    </div>
 </div>
 
-<div>
-    <form id="date-form">
-        Date: <input type='date' name='date' id="inputdate" value={{ input_date }}>
-        <input type='submit' id='datesubmit'>
-    </form>
-        
+</div> -->
+
+
+ <div id="wrapper" class="toggled">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper" style="background-color: rgb(255, 255, 255); border-right:2px solid rgb(0,0,0, 0.2);padding:25px 25px">
+
+        <div id="container-fluid">
+        <div id="row">
+            <div id="col-sm-12">
+                <form id='dateform' action='/profile/add-new-profile' method='POST'>
+                <div class="form-group input-group">
+                  <label class="col-form-label" for="inputDefault">Enter Date:</label>
+                  <input class="form-control col-md-3" type='date' name='date' id="inputdate" value={{input_date}}>
+                  <span class="input-group-btn">
+                  <input class="btn btn-primary" type='submit' id='submit'>
+                  </span>
+                </div>
+                </form>
+            </div>
+
+        <div id="col-sm-12">
+            <h1>Food Diary</h1>
+            <p>Select and Unselect Foods to view the impact on your nutrition</p>
+            <div class="btn-group-vertical" data-toggle="buttons">
+
+            {% for item in rec_obj %}
+              <button type="button" class="btn btn-outline-primary" aria-pressed="false" style="width:280px">
+                <div id="quantity1-{{item.record_id}}" style="text-transform:capitalize;">{{item.food.food_name}} : {{ item.serving_qty }} {{ item.serving_unit}} ({{item.serving_weight_grams}}g)</div>
+              </button>
+
+            {% endfor %}
+
+            </div>
+            <br>
+            <input class="btn btn-primary" type='submit' id='submit' value="Modify Food Diary">
+            <br><br><br><br>
+            <h1>Add Food Entry</h1>
+            <form autocomplete="off" id="addfoodform">
+                <div class="autocomplete" style="width:300px;">
+                    <input id="myInput" type="text" name="myCountry" placeholder="Search Foods">
+                    <button type="submit" id="addfoodsubmit" value="addfood">Add New Food</button>
+                </div>
+         
+            </form>
+        </div>
+        </div>
+        </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+<div id="page-content-wrapper">
+
+<div class="container-fluid">
+
+
+
+<form id='dateform' action='/profile/add-new-profile' method='POST'>
+<div class="form-group input-group">
+  <label class="col-form-label" for="inputDefault">Enter Date:</label>
+  <input class="form-control col-md-3" type='date' name='date' id="inputdate" value={{input_date}}>
+  <span class="input-group-btn">
+  <input class="btn btn-primary" type='submit' id='submit'>
+  </span>
 </div>
-<div id="profiletables">
+</form>
+</div>
+
+<div class="container-fluid">
+<div class="row">
+
+    <div class="col-sm-4">
+    <div class="card border-primary mb-3">
+      <div class="card-body">
+        <h4 class="card-title">Calories 500/1000</h4>
+        <div class="progress" style="height: 10px">
+        <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow={{total_nutrients['calories']}} aria-valuemin="0" aria-valuemax={{cal_obj.calories_modactive}}>25%
+        </div>
+        </div>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      </div>
+    </div>
+    </div>
+
+</div>
+</div>
+
+<div class="container-fluid">
+<div class="row">
+
+{% for item in macro %}
+<div class="col-sm-4 col-md-2">
+    <div class="card border-primary mb-3">
+      <div class="card-body">
+        <h4 class="card-title">{{macro[item]}}</h4>
+        <div class="row no-gutters">
+            {% if not ref_obj[item] %}
+                <div class="col-sm-12">No required Daily Reccomended Values for this age</div>
+
+            {% else %}
+                <div class="col-sm-9">
+                <div class="progress" style="height: 50px">
+                <div class="progress-bar" role="progressbar" style="width: 25%, display: inline-block;" aria-valuenow={{total_nutrients[item]}} aria-valuemin="0" aria-valuemax={{ref_obj[item]}}> {{total_nutrients[item]}}
+                </div><div style="height: 50px; display: inline-block; position: absolute; right:0">{{ref_obj[item]}}</div>
+                </div>
+                </div>
+                <div class="col-sm-3" style="text-align: center; vertical-align: middle;">{{ref_obj[item]}}</div>
+            {% endif %}
+        </div>
+        </div>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      </div>
+
+</div>
+{% endfor %}
+</div>
+</div>
+
+
+<div class="index-skills">
+    <div class="container-fluid" style="display:block !important; width:100% !important; margin-left:auto !important; margin-right:auto !important; text-align:left !important; padding:15px 30px 15px 30px !important;">
+         <div class="row">
+            <div class="col-sm-2"></div>
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-sm-4">
+                <h3> Vitamins</h3>
+
+                {%for item in vitamin %}
+
+                    <div class="col-sm-12">
+                    <div class="row no-gutters">
+                    <div class="col-sm-3"> {{vitamin[item]}} </div>
+                    <div class="col"> 
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:70%"> <span class="sr-only">70% Complete</span>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="col-sm-4">
+                <h3>Elements</h3>
+
+                {%for item in element %}
+                    <div class="col-sm-12">
+                    <div class="row no-gutters">
+                    <div class="col-sm-3">{{element[item]}}</div>
+                    <div class="col"> 
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:70%"> <span class="sr-only">70% Complete</span>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
 <table>
     <tr>
         <th>Nutrient Name</th>
@@ -40,14 +265,18 @@
     </tr>
     <tr>
         <td>Calories</td>
-        <td>{{cal_obj.calories_modactive}}
+        <td>{{cal_obj.calories_modactive}}</td>
         <td>{{total_nutrients['calories']}}</td>
+        <input id="totalcalories" type="hidden" name="totalcalories" value={{cal_obj.calories_modactive}}>
+        <input id="eatencalories" type="hidden" name="totalcalories" value={{total_nutrients['calories']}}>
     </tr>
     {%for item in nutrient_dict %}
         <tr>
             <td>{{ nutrient_dict[item] }}</td>
             <td>{{ ref_obj[item] }}</td>
             <td>{{ total_nutrients[item] }}</td>
+            <input id="total{{item}}" type="hidden" value={{ref_obj[item]}}>
+            <input id="eaten{{item}}" type="hidden" value={{total_nutrients[item]}}>
         </tr>
     {% endfor %}
 </table>
@@ -86,16 +315,20 @@
         {% endfor %}
         </tbody>
     </table>
-</div>
+
     <form autocomplete="off" id="addfoodform">
         <div class="autocomplete" style="width:300px;">
             <input id="myInput" type="text" name="myCountry" placeholder="Search Foods">
-            <input type="submit" id="addfoodsubmit" value="Add New Food">
+            <button type="submit" id="addfoodsubmit" value="addfood">Add New Food</button>
         </div>
  
     </form>
     <input id="acList" type="hidden" name="acList" value="none">
+
+</div>
 <br><br><br><br><br><br>
+
+
 
 <script src="/static/profile.js"></script>
 

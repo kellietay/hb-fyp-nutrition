@@ -45,6 +45,7 @@ def index():
     profile_list = []
     if session.get('userid',None):
         profile_list = User.query.get(session['userid']).profile
+    print(profile_list)
 
     return render_template("homepage.html",profiles=profile_list)
 
@@ -112,7 +113,7 @@ def logout():
 @login_required
 def profile(userid, profileid):
     
-    notused, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate =refreshtable(profileid)
+    notused, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate, macro_dict, vitamin_dict, element_dict, percent_nutrients = refreshtable(profileid)
     
     #7: display the respective nutrients on the html
     return render_template('profile.html', profileid=profileid, 
@@ -122,7 +123,11 @@ def profile(userid, profileid):
                                             nutrient_dict=nutrient_dict, 
                                             rec_obj=rec_obj, 
                                             total_nutrients=total_nutrients,
-                                            input_date=inputdate)
+                                            input_date=inputdate,
+                                            macro=macro_dict,
+                                            vitamin=vitamin_dict,
+                                            element=element_dict,
+                                            percent=percent_nutrients)
     
 
 def refreshtable(profileid = None, inputdate = None):
@@ -165,11 +170,47 @@ def refreshtable(profileid = None, inputdate = None):
         'potassium' : 'Potassium (g)',
         'sodium' : 'Sodium (μg)'}
 
+    macro_dict = {'carbohydrates': 'Carbohydrates (g)', 
+        'fiber': 'Total Fibre (g)', 
+        'fat': 'Fat (g)', 
+        'protein': 'Protein (g)'}
+
+    vitamin_dict = {'vitA' : 'Vitamin A (μg)', 
+        'vitC' : 'Vitamin C (mg)', 
+        'vitD' : 'Vitamin D (μg)',
+        'vitE' : 'Vitamin E (mg)', 
+        'vitB6' : 'Vitamin B6 (mg)', 
+        'vitB12' : 'Vitamin B12 (μg)', 
+        'thiamin' : 'Thiamin (mg)', 
+        'riboflavin' : 'Riboflavin (mg)', 
+        'niacin' : 'Niacin (mg)', 
+        'folate' : 'Folate(μg)'}
+
+    element_dict = {'calcium': 'Calcium (mg)', 
+        'copper' : 'Copper (μg)', 
+        'iron' : 'Iron (mg)', 
+        'magnesium' : 'Magnesium (mg)', 
+        'phosphorus' : 'Phosphorus (mg)', 
+        'selenium' : 'Selemium (μg)', 
+        'zinc' : 'Zinc (mg)', 
+        'potassium' : 'Potassium (g)',
+        'sodium' : 'Sodium (μg)'}
+
+
     rec_obj = Record.get_records_from_db(profileid, inputdate)
 
     total_nutrients = Record.calculate_total(rec_obj)
+    
+    percent_nutrients = {}
+    for key, value in total_nutrients.items():
+        if value == 0 or not ref_obj[key]:
+            percent_nutrients[key] = 0
+        else:
+            percent_nutrients[key] = round(total_nutrients[key]/ref_obj[key],0)
 
-    return profileid, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate
+    print(percent_nutrients)
+
+    return profileid, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate, macro_dict, vitamin_dict, element_dict, percent_nutrients
                             
 
 @app.route('/profile/retrieve')

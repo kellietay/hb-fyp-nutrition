@@ -1,6 +1,93 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <a class="navbar-brand" href="#">NutritionRabbit</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarColor01">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+      </li>
+{% if 'userid' in session %}
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Profiles
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+    {% if profiles is defined %}
+        {% for profile in profiles %}
+          <a class="dropdown-item" href='/profile/{{ session['userid'] }}/{{ profile.profile_id }}'>{{ profile.name }}'s Profile</a>
+        {% endfor %}
+        {% endif %}
+        <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href='/profile/new-profile'>Create new profile</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">About</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav flex-row ml-md-auto">
+        <li class="nav-item active">
+        <a class="nav-link"> Welcome, {{ session['fname'] }}</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link">|</a>
+        </li>
+        <li class="nav-item active">
+        <a class="nav-link" href="/logout">Logout</a>
+        </li>
+    </ul>
+    {% else %}
+    </ul>
+      <ul class="navbar-nav flex-row ml-md-auto">
+        <li class="nav-item active">
+        <a class="nav-link"> Welcome, Guest</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link">|</a>
+        </li>
+        <li class="nav-item active">
+        <a class="nav-link" href="/login">Login</a>
+        </li>
+      </ul>
+    {% endif %}
+  </div>
+</nav>
+<br>
+<div class="container">
+<div class="row">
+    <h2>Register</h2><br>
+    <div class="col-md-4">
+    <br><br>
+    <form action='/add-user' method='POST'>
+        <div class="form-group">
+            <label class="col-form-label" for="inputDefault">First Name</label>
+            <input type="text" class="form-control" placeholder="John" id="inputDefault" name='fname'>
+        </div>
+        <div class="form-group">
+            <label class="col-form-label" for="inputDefault1">Last Name</label>
+            <input type="text" class="form-control" placeholder="Smith" id="inputDefault1" name='lname'>
+        </div>
+        <div class="form-group">
+          <label for="firstname">Email Address</label>
+          <input type="text" class="form-control" id="firstname" aria-describedby="emailHelp" placeholder="Enter email" name="email">
+          <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">Password</label>
+          <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" name="password">
+        </div><br>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    </div>
+</div>
+</div>
+<!-- 
+
 <h1>Register</h1>
 
 <div>
@@ -12,5 +99,5 @@
         <input type='submit'>
 </div>
 
-
+ -->
 {% endblock %}

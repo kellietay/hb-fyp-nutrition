@@ -1,0 +1,14 @@
+#homepagebackground {
+  background-image: url("backgroundimage.jpg");
+  background-color: #cccccc;
+  height: 600px;
+  width: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+/*  background-size: 100% 100%;*/
+/*  position: relative;*/
+}
+
+#opacity {
+    background-color: rgb(0, 0, 0, 0.3);
+}
