@@ -173,6 +173,19 @@ class Record(db.Model):
 
         return "profile id ={}, food id={}, serving weight={}, date={}".format(self.profile_id, self.food_id, self.serving_weight_grams, self.date)
 
+    def serialize(self):
+        rec_dict = {}
+        rec_dict["serving_unit"] = self.serving_unit
+        rec_dict["serving_qty"] = self.serving_qty
+        rec_dict["food_id"] = self.food_id
+        rec_dict["record_id"] = self.record_id
+        rec_dict["serving_weight_grams"] = self.serving_weight_grams
+        rec_dict["date"] = "{}-{}-{}".format(self.date.year, self.date.month, self.date.day)
+        rec_dict["profile_id"] = self.profile_id
+
+        return rec_dict
+
+
     @classmethod
     def convert_to_json(cls, lst):
         

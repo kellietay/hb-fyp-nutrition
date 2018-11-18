@@ -1,9 +1,99 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<!-- Button trigger modal -->
 
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+                <table class="table" style="border: none">
+<!--         <thead>
+        <tr>
+            <th>Quantity</th>
+            <th>Food Name</th>
+            <th>Unit </th>
+            <th>Weight (g)</th>
+            <th></th>
+        </tr>
+        </thead> -->
+
+        <tbody id="records-table">
+            <tr class="table-primary">
+                <td style="text-align:left; vertical-align: middle">
+                    <div class="editquantity"><input type=text class="form-control is-valid" id="modal-quantity" placeholder="" style="width:100px"></div>
+                </td>
+                <td style="text-transform: capitalize; vertical-align: middle; text-align:left;"><h5><div id="modal-food"></div></h5></td>
+                <td style="vertical-align: middle; text-align:left;">
+                    <button id="modal-btn-update" type="submit" value="" class="btn btn-primary" data-dismiss="modal">Update Quantity</button>
+                    <button id="modal-btn-delete" type="submit" value="" class="btn btn-secondary" data-dismiss="modal">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+            <button id="#modal-btn-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+<!--         <h5 class="modal-title" id="exampleModalLongTitle">Apple: 0.0 Medium</h5> -->
+
+      </div>
+      <div class="modal-body" id="modal-body" style="border: none">
+
+    <h5>Nutritional Information</h5>
+      <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h6>Macro-Nutrients</h6>
+                <table class="table">
+                    {% for item in macro %}
+                        <tr>
+                            <td style="border:none; padding:0">{{macro[item]}}</td>
+                            <td style="border:none; padding:0" id="modal-{{item}}"></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="col-sm-6"></div>
+            <div class="col-sm-6">
+                <h6>Vitamins</h6>
+                <table class="table">
+                    {% for item in vitamin %}
+                        <tr>
+                            <td style="border:none; padding:0">{{vitamin[item]}}</td>
+                            <td style="border:none; padding:0" id="modal-{{item}}"></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="col-sm-6">
+                <h6>Elements</h6>
+                <table class="table">
+                    {% for item in element %}
+                        <tr>
+                            <td style="border:none; padding:0">{{element[item]}}</td>
+                            <td style="border:none; padding:0" id="modal-{{item}}"></td>
+                        </tr>
+                    {% endfor %}
+                    </tr>
+                </table>
+            </div>
+        </div>
+      </div>
+
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+<!--         <button type="button" class="btn btn-outline-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
   <a class="navbar-brand" href="#">NutritionRabbit</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -16,7 +106,7 @@
 {% if 'userid' in session %}
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Profiles
+          Select Profile
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
     {% if profiles is defined %}
@@ -88,45 +178,81 @@
  <div id="wrapper" class="toggled">
 
         <!-- Sidebar -->
-        <div id="sidebar-wrapper" style="background-color: rgb(255, 255, 255); border-right:2px solid rgb(0,0,0, 0.2);padding:25px 25px">
+        <div id="sidebar-wrapper" style="background-color: rgb(255, 255, 255); border-right:2px solid rgb(0,0,0, 0.2);padding: 100px 25px 25px 25px">
 
         <div id="container-fluid">
         <div id="row">
             <div id="col-sm-12">
-                <form id='dateform' action='/profile/add-new-profile' method='POST'>
-                <div class="form-group input-group">
-                  <label class="col-form-label" for="inputDefault">Enter Date:</label>
-                  <input class="form-control col-md-3" type='date' name='date' id="inputdate" value={{input_date}}>
-                  <span class="input-group-btn">
-                  <input class="btn btn-primary" type='submit' id='submit'>
-                  </span>
+                <h4>Date</h4>
+                <form id='dateform' method='GET' class="form-group" action="/profile/{{userid}}/{{profileid}}">
+                <div class="autocomplete">
+                  <input id="inputdate" class="form-control" type='date' name='inputdate'  value={{input_date}}>
+                  <button class="btn btn-primary" type='submit' id='datesubmit'>
+                    Change Date
+                  </button>
                 </div>
                 </form>
             </div>
-
         <div id="col-sm-12">
-            <h1>Food Diary</h1>
-            <p>Select and Unselect Foods to view the impact on your nutrition</p>
-            <div class="btn-group-vertical" data-toggle="buttons">
+            <h3>Food Diary</h3>
+            <p>Click to view and modify Foods</p>
+            <div class="btn-group-vertical" id="records-button">
 
             {% for item in rec_obj %}
-              <button type="button" class="btn btn-outline-primary" aria-pressed="false" style="width:280px">
-                <div id="quantity1-{{item.record_id}}" style="text-transform:capitalize;">{{item.food.food_name}} : {{ item.serving_qty }} {{ item.serving_unit}} ({{item.serving_weight_grams}}g)</div>
+              <button 
+                type="button" 
+                class="btn btn-outline-primary food-diary-buttons"
+                id="button-{{item.record_id}}" 
+                style="width:280px" 
+                data-toggle="modal" 
+                data-target="#exampleModalCenter">
+
+                <div id="quantity1-{{item.record_id}}" style="text-transform:capitalize;"
+
+                data-record_id="{{item.record_id}}" 
+                data-food_name="{{item.food.food_name}}"
+                data-serving_qty="{{item.serving_qty}}"
+                data-serving_unit="{{item.serving_unit}}"
+                data-serving_weight_grams="{{item.serving_weight_grams}}" 
+                data-calories="{{item.food.calories}}"
+                data-carbohydrates="{{item.food.carbohydrates}}"
+                data-fiber="{{item.food.fiber}}"
+                data-fat="{{item.food.fat}}"
+                data-protein="{{item.food.protein}}"
+                data-vit-A="{{item.food.vitA}}" 
+                data-vit-C="{{item.food.vitC}}" 
+                data-vit-D="{{item.food.vitD}}"
+                data-vit-E="{{item.food.vitE}}" 
+                data-vit-B6="{{item.food.vitB6}}"
+                data-vit-B12="{{item.food.vitB12}}"
+                data-thiamin="{{item.food.thiamin}}"
+                data-riboflavin="{{item.food.riboflavin}}"
+                data-niacin="{{item.food.niacin}}"
+                data-folate="{{item.food.folate}}"
+                data-calcium="{{item.food.calcium}}"
+                data-copper="{{item.food.copper}}"
+                data-iodine="{{item.food.iodine}}"
+                data-iron="{{item.food.iron}}"
+                data-magnesium="{{item.food.magnesium}}"
+                data-phosphorus="{{item.food.phosphorus}}"
+                data-selenium="{{item.food.iron}}"
+                data-zinc="{{item.food.zinc}}"
+                data-potassium="{{item.food.potassium}}"
+                data-sodium="{{item.food.sodium}}"
+                data-chloride="{{item.food.chloride}}">
+                {{ item.serving_qty }} - {{item.food.food_name}}, {{ item.serving_unit}} ({{item.serving_weight_grams}}g)</div>
               </button>
 
             {% endfor %}
 
             </div>
-            <br>
-            <input class="btn btn-primary" type='submit' id='submit' value="Modify Food Diary">
-            <br><br><br><br>
-            <h1>Add Food Entry</h1>
-            <form autocomplete="off" id="addfoodform">
-                <div class="autocomplete" style="width:300px;">
-                    <input id="myInput" type="text" name="myCountry" placeholder="Search Foods">
-                    <button type="submit" id="addfoodsubmit" value="addfood">Add New Food</button>
+            <br><br><br><br><br>
+            <h3>Add Food Entry</h3>
+            <form class="form-group" autocomplete="off" id="addfoodform">
+                <div class="autocomplete">
+                    <input id="myInput" class="form-control" type="text" placeholder="Search Foods">
+                    <button type="submit" class="btn btn-primary" id="addfoodsubmit" value="addfood">Add New Food</button>
                 </div>
-         
             </form>
         </div>
         </div>
@@ -135,11 +261,10 @@
         <!-- /#sidebar-wrapper -->
 
         <!-- Page Content -->
-<div id="page-content-wrapper">
 
-<div class="container-fluid">
-
-
+<div id="page-content-wrapper" >
+<div id="profiletables" style="padding-top: 50px">
+<!-- <div class="container-fluid">
 
 <form id='dateform' action='/profile/add-new-profile' method='POST'>
 <div class="form-group input-group">
@@ -150,58 +275,98 @@
   </span>
 </div>
 </form>
-</div>
+</div> -->
 
-<div class="container-fluid">
+    <br><br>
+    <h3>{{ profile_obj["name"] }}'s Profile</h3>
+    <br><br>
+
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active show" data-toggle="tab" href="#overview">Macro-Nutrients</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#details">Vitamins</a>
+  </li>
+    <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#elements">Elements</a>
+  </li>
+</ul>
+<div id="myTabContent" class="tab-content">
+  <div class="tab-pane fade active show" id="overview">
+    <div class="container-fluid">
+<br><br>
+        <h5>Macro-Nutrients</h5><br>
+<div class="row">
+    <div class="col-sm-9">
 <div class="row">
 
     <div class="col-sm-4">
-    <div class="card border-primary mb-3">
+    <div class="card border-secondary mb-3">
       <div class="card-body">
-        <h4 class="card-title">Calories 500/1000</h4>
-        <div class="progress" style="height: 10px">
-        <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow={{total_nutrients['calories']}} aria-valuemin="0" aria-valuemax={{cal_obj.calories_modactive}}>25%
+        <h5 class="card-title">Calories</h5>
+        <h6><font color="darkgrey">{{total_nutrients["calories"]|round|int}}</font> /{{cal_obj["calories_modactive"]|round|int}} </h6>
+        <div class="progress" style="height: 25px">
+        <div class="progress-bar" role="progressbar" style="width:{{percent["calories"]}}%;" aria-valuenow={{percent["calories"]}} aria-valuemin="0" aria-valuemax=100>{{percent["calories"]}}%
         </div>
         </div>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <p class="card-text"></p>
       </div>
     </div>
     </div>
 
-</div>
+<!-- </div>
 </div>
 
 <div class="container-fluid">
-<div class="row">
+<div class="row"> -->
 
 {% for item in macro %}
-<div class="col-sm-4 col-md-2">
-    <div class="card border-primary mb-3">
+<div class="col-sm-4 col-md-4">
+    <div class="card border-secondary mb-3">
       <div class="card-body">
-        <h4 class="card-title">{{macro[item]}}</h4>
-        <div class="row no-gutters">
-            {% if not ref_obj[item] %}
-                <div class="col-sm-12">No required Daily Reccomended Values for this age</div>
+        {% if not ref_obj[item] %}
+            <h5 class="card-title">{{macro[item]}}</h5>
+            <h6><font color="darkgrey">{{total_nutrients[item]|round(2)}}</font> / None </h6>
+            <div class="row no-gutters">
+                <div class="col-sm-12">
+                    <div class="progress" style="height: 25px">
+                    <div class="progress-bar green" role="progressbar" style="width:100%" aria-valuenow={{total_nutrients[item]}} aria-valuemin="0" aria-valuemax={{ref_obj[item]}}> No Reference Values
+                    </div><!-- <div style="height: 50px; display: inline-block; position: absolute; right:0; padding-top:20px">{{ref_obj[item]}}</div> -->
+                    </div>
 
-            {% else %}
-                <div class="col-sm-9">
-                <div class="progress" style="height: 50px">
-                <div class="progress-bar" role="progressbar" style="width: 25%, display: inline-block;" aria-valuenow={{total_nutrients[item]}} aria-valuemin="0" aria-valuemax={{ref_obj[item]}}> {{total_nutrients[item]}}
-                </div><div style="height: 50px; display: inline-block; position: absolute; right:0">{{ref_obj[item]}}</div>
+                </div>
+            </div>
+        {% else %}
+            <h5 class="card-title">{{macro[item]}}</h5>
+            <h6><font color="darkgrey">{{total_nutrients[item]|round(2)}}</font> / {{ref_obj[item]|round(2)}} </h6>
+            <div class="row no-gutters">
+                <div class="col-sm-12">
+                <div class="progress" style="height: 25px">
+                    {% if percent[item] > 100 %}
+                        <div class="progress-bar green" role="progressbar" style="width:{{percent[item]}}%" aria-valuenow={{total_nutrients[item]}} aria-valuemin="0" aria-valuemax={{ref_obj[item]}}> {{percent[item]}}%
+                        </div>
+                    {% else %}
+                        <div class="progress-bar" role="progressbar" style="width:{{percent[item]}}%" aria-valuenow={{total_nutrients[item]}} aria-valuemin="0" aria-valuemax={{ref_obj[item]}}> {{percent[item]}}%
+                        </div>  
+                    {% endif %}
                 </div>
                 </div>
-                <div class="col-sm-3" style="text-align: center; vertical-align: middle;">{{ref_obj[item]}}</div>
+            </div>
             {% endif %}
+        <p class="card-text"></p>
         </div>
-        </div>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
       </div>
 
 </div>
 {% endfor %}
 </div>
 </div>
+</div>
+</div>
+</div>
 
+<div class="tab-pane fade" id="details">
 
 <div class="index-skills">
     <div class="container-fluid" style="display:block !important; width:100% !important; margin-left:auto !important; margin-right:auto !important; text-align:left !important; padding:15px 30px 15px 30px !important;">
@@ -212,36 +377,64 @@
 
         <div class="row">
 
-            <div class="col-sm-4">
-                <h3> Vitamins</h3>
+            <div class="col-sm-8">
+                <br><h5> Vitamins</h5><br>
 
                 {%for item in vitamin %}
 
                     <div class="col-sm-12">
-                    <div class="row no-gutters">
-                    <div class="col-sm-3"> {{vitamin[item]}} </div>
+                    <div class="row" style="padding:3px">
+                    <div class="col-sm-3">{{vitamin[item]}}</div>
+                    <div class="col-sm-3"><font color="darkgrey">{{total_nutrients[item]|round(1)}}</font> / {{ref_obj[item]|round(1)}}</div>
                     <div class="col"> 
                     <div class="progress">
-                        <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:70%"> <span class="sr-only">70% Complete</span>
+                        {%if percent[item] > 100%}
+                        <div class="progress-bar green" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:{{percent[item]}}%">{{percent[item]|round|int}}%
                         </div>
+
+                        {% else %}
+
+                        <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:{{percent[item]}}%">{{percent[item]|round|int}}%
+                        </div>
+                        {% endif %}
                     </div>
                     </div>
                     </div>
                     </div>
                 {% endfor %}
             </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-            <div class="col-sm-4">
-                <h3>Elements</h3>
 
+<div class="tab-pane fade" id="elements">
+
+<div class="index-skills">
+    <div class="container-fluid" style="display:block !important; width:100% !important; margin-left:auto !important; margin-right:auto !important; text-align:left !important; padding:15px 30px 15px 30px !important;">
+         <div class="row">
+            <div class="col-sm-2"></div>
+        </div>
+
+
+        <div class="row" >
+            <div class="col-sm-8">
+                <br><h5>Elements</h5><br>
                 {%for item in element %}
                     <div class="col-sm-12">
-                    <div class="row no-gutters">
+                    <div class="row" style="padding:3px">
                     <div class="col-sm-3">{{element[item]}}</div>
+                    <div class="col-sm-3"><font color="darkgrey">{{total_nutrients[item]|round(1)}}</font> / {{ref_obj[item]|round(1)}}</div>
                     <div class="col"> 
                     <div class="progress">
-                        <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:70%"> <span class="sr-only">70% Complete</span>
+                        {%if percent[item] > 100%}
+                        <div class="progress-bar green" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: {{percent[item]}}%">{{percent[item]|round|int}}%
                         </div>
+                        {% else %}
+                        <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: {{percent[item]}}%">{{percent[item]|round|int}}%
+                        </div>
+                        {% endif %}
                     </div>
                     </div>
                     </div>
@@ -252,81 +445,15 @@
             </div>
         </div>
     </div>
+</div>
 
-
-
-
-
-<table>
-    <tr>
-        <th>Nutrient Name</th>
-        <th>Reccomended Daily Value</th>
-        <th>Today's Values</th>
-    </tr>
-    <tr>
-        <td>Calories</td>
-        <td>{{cal_obj.calories_modactive}}</td>
-        <td>{{total_nutrients['calories']}}</td>
-        <input id="totalcalories" type="hidden" name="totalcalories" value={{cal_obj.calories_modactive}}>
-        <input id="eatencalories" type="hidden" name="totalcalories" value={{total_nutrients['calories']}}>
-    </tr>
-    {%for item in nutrient_dict %}
-        <tr>
-            <td>{{ nutrient_dict[item] }}</td>
-            <td>{{ ref_obj[item] }}</td>
-            <td>{{ total_nutrients[item] }}</td>
-            <input id="total{{item}}" type="hidden" value={{ref_obj[item]}}>
-            <input id="eaten{{item}}" type="hidden" value={{total_nutrients[item]}}>
-        </tr>
-    {% endfor %}
-</table>
-
-<h1>Foods eaten today</h1>
-    <table>
-        <thead>
-        <tr>
-            <th>Food</th>
-            <th>Quantity</th>
-            <th>Unit </th>
-            <th>Serving Weight (g)</th>
-            <th></th>
-        </tr>
-        </thead>
-
-        <tbody id="records-table">
-        {%for item in rec_obj %}
-            <tr id="food-table-{{item.record_id}}">
-                <td>{{ item.food.food_name }}</td>
-                <td>
-                    <div id="food-form-quantity1-{{item.record_id}}" class="quantity">{{ item.serving_qty }}</div>
-
-                    <div style="display: none;" id="food-form-quantity2-{{item.record_id}}" class="editquantity"><input type=text placeholder={{item.serving_qty}}></div>
-                </td>
-                <td>{{ item.serving_unit }} </td>
-                <td>{{ item.serving_weight_grams }}</td>
-                <td>
-                    <button id="food-form-button-edit-{{item.record_id}}" class="editbuttons" name="record_id" type="submit" value="{{item.record_id}}">Modify</button>
-                    <button style="display: none;" id="food-form-button-submit-{{item.record_id}}" type="submit" value="{{item.record_id}}">Save</button>
-                    <button style="display: none;" id="food-form-button-delete-{{item.record_id}}" type="submit" value="{{item.record_id}}">Delete</button>
-                    <button style="display: none;" id="food-form-button-cancel-{{item.record_id}}" type="submit" value="{{item.record_id}}">Cancel</button>
-
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <form autocomplete="off" id="addfoodform">
-        <div class="autocomplete" style="width:300px;">
-            <input id="myInput" type="text" name="myCountry" placeholder="Search Foods">
-            <button type="submit" id="addfoodsubmit" value="addfood">Add New Food</button>
-        </div>
- 
-    </form>
-    <input id="acList" type="hidden" name="acList" value="none">
+    <input id="profileid" type="hidden" name="profileid" value={{profileid}}>
+    <input id="userid" type="hidden" name="userid" value={{userid}}>
 
 </div>
 <br><br><br><br><br><br>
+  </div>
+</div>
 
 
 

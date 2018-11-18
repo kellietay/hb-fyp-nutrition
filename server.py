@@ -115,10 +115,18 @@ def logout():
 @login_required
 def profile(userid, profileid):
     
-    notused, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate, macro_dict, vitamin_dict, element_dict, percent_nutrients = refreshtable(profileid)
+    input_date = request.args.get('inputdate', None)
+
+    profile_list = []
+    if session.get('userid',None):
+        profile_list = User.query.get(session['userid']).profile
+
+    notused, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate, macro_dict, vitamin_dict, element_dict, percent_nutrients = refreshtable(profileid, input_date)
     
     #7: display the respective nutrients on the html
     return render_template('profile.html', profileid=profileid, 
+                                            profiles=profile_list,
+                                            profile_obj=notused,
                                             userid=userid, 
                                             ref_obj=ref_obj, 
                                             cal_obj=cal_obj, 
@@ -170,7 +178,7 @@ def refreshtable(profileid = None, inputdate = None):
         'selenium' : 'Selemium (μg)', 
         'zinc' : 'Zinc (mg)', 
         'potassium' : 'Potassium (g)',
-        'sodium' : 'Sodium (μg)'}
+        'sodium' : 'Sodium (g)'}
 
     macro_dict = {'carbohydrates': 'Carbohydrates (g)', 
         'fiber': 'Total Fibre (g)', 
@@ -196,40 +204,56 @@ def refreshtable(profileid = None, inputdate = None):
         'selenium' : 'Selemium (μg)', 
         'zinc' : 'Zinc (mg)', 
         'potassium' : 'Potassium (g)',
-        'sodium' : 'Sodium (μg)'}
-
+        'sodium' : 'Sodium (g)'}
 
     rec_obj = Record.get_records_from_db(profileid, inputdate)
 
     total_nutrients = Record.calculate_total(rec_obj)
     
     percent_nutrients = {}
+
     for key, value in total_nutrients.items():
-        if value == 0 or not ref_obj[key]:
+        
+        if key == "calories":
+            percent_nutrients[key] = round(total_nutrients[key]/cal_obj.__dict__["calories_modactive"]*100,1)
+        
+        elif value == 0 or not ref_obj.__dict__.get(key, None):
             percent_nutrients[key] = 0
+
         else:
-            percent_nutrients[key] = round(total_nutrients[key]/ref_obj[key],0)
+            percent_nutrients[key] = round(total_nutrients[key]/ref_obj.__dict__[key]*100,1)
 
-    print(percent_nutrients)
-
-    return profileid, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate, macro_dict, vitamin_dict, element_dict, percent_nutrients
+    return profile_obj, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate, macro_dict, vitamin_dict, element_dict, percent_nutrients
                             
 
-@app.route('/profile/retrieve')
-@login_required
-def retrieve_table():
+# @app.route('/profile/retrieve')
+# @login_required
+# def retrieve_table():
 
-    profileid = request.args.get('profileid')
-    inputdate = request.args.get('inputdate')
+#     profileid = request.args.get('profileid')
+#     input_date = request.args.get('inputdate')
 
-    profileid1, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate1 = refreshtable(profileid, inputdate)
+#     profile_list = []
+#     if session.get('userid',None):
+#         profile_list = User.query.get(session['userid']).profile
 
-    return render_template('profile_ajax.html', profileid=profileid, 
-                                                ref_obj=ref_obj, 
-                                                cal_obj=cal_obj, 
-                                                nutrient_dict=nutrient_dict, 
-                                                rec_obj=rec_obj, 
-                                                total_nutrients=total_nutrients)
+#     notused, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate, macro_dict, vitamin_dict, element_dict, percent_nutrients = refreshtable(profileid, input_date)
+    
+#     #7: display the respective nutrients on the html
+#     return render_template('profile_date_ajax.html', profileid=profileid,
+#                                             profiles=profiles_list,
+#                                             profile_obj=notused,
+#                                             userid=userid, 
+#                                             ref_obj=ref_obj, 
+#                                             cal_obj=cal_obj, 
+#                                             nutrient_dict=nutrient_dict, 
+#                                             rec_obj=rec_obj, 
+#                                             total_nutrients=total_nutrients,
+#                                             input_date=inputdate,
+#                                             macro=macro_dict,
+#                                             vitamin=vitamin_dict,
+#                                             element=element_dict,
+#                                             percent=percent_nutrients)
 
 @app.route('/profile/new-profile')
 @login_required
@@ -351,8 +375,8 @@ def addfood():
             phosphorus = nutrient_data.get("attr_305", 0),
             selenium = nutrient_data.get("attr_317", 0),
             zinc = nutrient_data.get("attr_309", 0),
-            potassium = json_data.get("nf_potassium"),
-            sodium = nutrient_data.get("attr_307", 0),
+            potassium = json_data.get("nf_potassium")/1000,
+            sodium = nutrient_data.get("attr_307", 0)/1000,
             chloride = 0,
             alt_measures = str_alt_measures)
 
@@ -395,26 +419,45 @@ def addrecord():
 
     record_obj = Record.query.get(recordid)
 
+    print(record_obj, recordid, newquantity, profileid, inputdate, updatetype)
+
     if record_obj and newquantity and updatetype == "update":
         record_obj.serving_qty = float(newquantity)
         db.session.commit()
+        print("updated record")
 
     elif record_obj and updatetype == "delete":
 
         db.session.delete(record_obj)
         db.session.commit()
+        print("deleted record")
 
     else:
         return "please check code"
 
-    profileid1, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate1 = refreshtable(profileid, inputdate)
+    profile_list = []
+    if session.get('userid',None):
+        userid=session.get('userid',None)
+        profile_list = User.query.get(session['userid']).profile
 
+    notused, ref_obj, cal_obj, nutrient_dict, rec_obj, total_nutrients, inputdate, macro_dict, vitamin_dict, element_dict, percent_nutrients = refreshtable(profileid, inputdate)
+    
+    #7: display the respective nutrients on the html
     return render_template('profile_ajax.html', profileid=profileid, 
-                                                ref_obj=ref_obj, 
-                                                cal_obj=cal_obj, 
-                                                nutrient_dict=nutrient_dict, 
-                                                rec_obj=rec_obj, 
-                                                total_nutrients=total_nutrients)
+                                            profiles=profile_list,
+                                            profile_obj=notused,
+                                            userid=userid, 
+                                            ref_obj=ref_obj, 
+                                            cal_obj=cal_obj, 
+                                            nutrient_dict=nutrient_dict, 
+                                            rec_obj=rec_obj, 
+                                            total_nutrients=total_nutrients,
+                                            input_date=inputdate,
+                                            macro=macro_dict,
+                                            vitamin=vitamin_dict,
+                                            element=element_dict,
+                                            percent=percent_nutrients)
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the

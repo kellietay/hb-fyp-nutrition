@@ -4,102 +4,214 @@ function replaceTables(results){
     var status = results;
     $('#profiletables').html(status);
     console.log("Finished replaceTables");
+
 }
 
-function updateTables(evt){
-    evt.preventDefault()
+// function updateTables(evt){
+//     evt.preventDefault()
+//     const formData = {
+//             inputdate: $('#inputdate').val(),
+//             profileid: $('#profileid').val()
+//         }
+
+//     $.get("/profile/retrieve", formData, replaceTables);
+//     console.log("ran AJAX");
+// }
+
+// function initReload(){
+//     console.log("initReload is on");
+//     $('#datesubmit').on('click', updateTables);
+// }
+
+// initReload();
+
+
+/// Record Modal Popup: ///
+/// 1. Event Listener on button///
+/// 2. on click, open modal (automatic), and run AJAX call to display food and its nutrients///
+/// 3. Event Listerner on Submit Buttoon to update record in database, followed by AJAX call ///
+///    to refresh the relevant sections ///
+
+function initFoodDiary(){
+console.log("initFoodDiary is on")
+$('.food-diary-buttons').off()
+$('.food-diary-buttons').on('click', function(evt){
+  var record_id = $(evt.target).data('record_id')
+  console.log(record_id)
+
+  /// Update Information in Modal with data in target button///
+  /// Tested and confirmed it works ///
+  $('#modal-btn-update').val(record_id)
+  $('#modal-btn-delete').val(record_id)
+  $('#modal-quantity').attr("placeholder",$(evt.target).data("serving_qty"))
+  $('#modal-food').text($(evt.target).data('food_name') + ", " 
+    + $(evt.target).data('serving_unit')
+    + " (" 
+    + $(evt.target).data('serving_weight_grams')
+    + "g)")
+  $('#modal-calories').text($(evt.target).data('calories'))
+  $('#modal-carbohydrates').text($(evt.target).data('carbohydrates'))
+  $('#modal-fiber').text($(evt.target).data('fiber'))
+  $('#modal-fat').text($(evt.target).data('fat'))
+  $('#modal-protein').text($(evt.target).data('protein'))
+  $('#modal-vitA').text($(evt.target).data('vitA'))
+  $('#modal-vitC').text($(evt.target).data('vitC'))
+  $('#modal-vitD').text($(evt.target).data('vitD'))
+  $('#modal-vitE').text($(evt.target).data('vitE'))
+  $('#modal-vitB6').text($(evt.target).data('vitB6'))
+  $('#modal-vitB12').text($(evt.target).data('vitB12'))
+  $('#modal-thiamin').text($(evt.target).data('thiamin'))
+  $('#modal-riboflavin').text($(evt.target).data('riboflavin'))
+  $('#modal-niacin').text($(evt.target).data('niacin'))
+  $('#modal-folate').text($(evt.target).data('folate'))
+  $('#modal-calcium').text($(evt.target).data('calcium'))
+  $('#modal-iodine').text($(evt.target).data('iodine'))
+  $('#modal-iron').text($(evt.target).data('iron'))
+  $('#modal-magnesium').text($(evt.target).data('magnesium'))
+  $('#modal-phosphorus').text($(evt.target).data('phosphorus'))
+  $('#modal-selenium').text($(evt.target).data('selenium'))
+  $('#modal-zinc').text($(evt.target).data('zinc'))
+  $('#modal-potassium').text($(evt.target).data('potassium'))
+  $('#modal-sodium').text($(evt.target).data('sodium'))
+  $('#modal-chloride').text($(evt.target).data('chloride'))
+  $('#modal-copper').text($(evt.target).data('copper'))
+
+  /// Create event listener for Update Quantiy Button ///
+
+  $('#modal-btn-update').on('click', function(event) {
+    event.preventDefault();
+    console.log('modal-btn-update is clicked')
+    console.log('recordid is ' + event.target.value)
     const formData = {
-            inputdate: $('#inputdate').val(),
-            profileid: $('#profileid').val()
-        }
+      recordid: event.target.value,
+      newquantity: $('#modal-quantity').val(),
+      inputdate: $('#inputdate').val(),
+      profileid: $('#profileid').val(),
+      type: 'update'
+    }
+    console.log(formData)
+    $('#quantity1-' + record_id).text($('#modal-quantity').val() 
+      + ".0 - " 
+      + $(evt.target).data('food_name') 
+      + ", " 
+      + $(evt.target).data('serving_unit')
+      + " (" 
+    + $(evt.target).data('serving_weight_grams')
+    + "g)")
+    
+    $.post("/profile/updaterecords", formData, function(data){
+      replaceTables(data);
+      $('#modal-btn-update').off()
+      $('#modal-btn-close').off();;
+    })
+  }) /// End event listener for #modal-btn-update ///
 
-    $.get("/profile/retrieve", formData, replaceTables);
-    console.log("ran AJAX");
-}
+  $('#modal-btn-delete').on('click', function(event) {
+    event.preventDefault();
+    console.log('modal-btn-delete is clicked')
+    const formData = {
+      recordid: event.target.value,
+      newquantity: $('#modal-quantity').val(),
+      inputdate: $('#inputdate').val(),
+      profileid: $('#profileid').val(),
+      type: 'delete'
+    }
+    console.log(formData)
+    $('#button-' + record_id).hide()
 
-function initReload(){
-    console.log("initReload is on");
-    $('#dateform').on('click', updateTables);
-}
+    $.post("/profile/updaterecords", formData, function(data){
+      replaceTables(data); 
+      $('#button-' + record_id).hide(); 
+      $('#modal-btn-delete').off();
+      $('#modal-btn-close').off(); })
+    }) // End event listener for #modal-btn-delete ///
 
-initReload();
+  $('#modal-btn-delete').on('click', function (event){
+    $('#modal-btn-delete').off();
+    $('#modal-btn-close').off();
+    $('#modal-btn-update').off()
+  })
+  }) // End event lister for food-button//
 
+} // End Function initFoodDiary() //
+
+initFoodDiary();
 
 /// Records: Edit, Submit, Cancel Event Listeners ///
 
-function initButtons(){
-console.log("initButtons is on")
-$('.editbuttons').on('click', function(evt){
-    evt.preventDefault();
-    console.log(evt.target.value);
-    var recordvalue;
-    recordvalue = evt.target.value;
-    var quantity1 = "#food-form-quantity1-"+recordvalue;
-    var quantity2 = "#food-form-quantity2-"+recordvalue;
-    $(quantity1).hide();
-    $(quantity2).show();
-    var submitbutton = "#food-form-button-submit-"+recordvalue;
-    var cancelbutton = "#food-form-button-cancel-"+recordvalue;
-    var editbutton = "#food-form-button-edit-"+recordvalue;
-    var deletebutton = "#food-form-button-delete-"+recordvalue;
-    $(submitbutton).show();
-    $(cancelbutton).show();
-    $(deletebutton).show();
-    $(editbutton).hide();
+// function initButtons(){
+// console.log("initButtons is on")
+// $('.editbuttons').on('click', function(evt){
+//     evt.preventDefault();
+//     console.log(evt.target.value);
+//     var recordvalue;
+//     recordvalue = evt.target.value;
+//     var quantity1 = "#food-form-quantity1-"+recordvalue;
+//     var quantity2 = "#food-form-quantity2-"+recordvalue;
+//     $(quantity1).hide();
+//     $(quantity2).show();
+//     var submitbutton = "#food-form-button-submit-"+recordvalue;
+//     var cancelbutton = "#food-form-button-cancel-"+recordvalue;
+//     var editbutton = "#food-form-button-edit-"+recordvalue;
+//     var deletebutton = "#food-form-button-delete-"+recordvalue;
+//     $(submitbutton).show();
+//     $(cancelbutton).show();
+//     $(deletebutton).show();
+//     $(editbutton).hide();
 
-    function hideButtons(){
-        $(submitbutton).hide();
-        $(cancelbutton).hide();
-        $(deletebutton).hide();
-        $(editbutton).show();
-        $(".editquantity").hide();
-        $(".quantity").show();
-        $(submitbutton).off();
-        $(cancelbutton).off();
-    }
+//     function hideButtons(){
+//         $(submitbutton).hide();
+//         $(cancelbutton).hide();
+//         $(deletebutton).hide();
+//         $(editbutton).show();
+//         $(".editquantity").hide();
+//         $(".quantity").show();
+//         $(submitbutton).off();
+//         $(cancelbutton).off();
+//     }
 
-    $(submitbutton).on('click',function(event){
-        event.preventDefault();
-        console.log("submit button is clicked");
-        $(quantity1).text($(quantity2).children().val());
-        hideButtons();
-        const formData = {
-        recordid: event.target.value,
-        newquantity: $(quantity2).children().val(),
-        inputdate: $('#inputdate').val(),
-        profileid: $('#profileid').val(),
-        type: "update"
-        }
-        console.log(formData)
+//     $(submitbutton).on('click',function(event){
+//         event.preventDefault();
+//         console.log("submit button is clicked");
+//         $(quantity1).text($(quantity2).children().val());
+//         hideButtons();
+//         const formData = {
+//         recordid: event.target.value,
+//         newquantity: $(quantity2).children().val(),
+//         inputdate: $('#inputdate').val(),
+//         profileid: $('#profileid').val(),
+//         type: "update"
+//         }
+//         console.log(formData)
 
-        $.post("/profile/updaterecords", formData, replaceTables);
+//         $.post("/profile/updaterecords", formData, replaceTables);
         
-    })
+//     })
 
-    $(cancelbutton).on('click',function(event){
-        event.preventDefault();
-        console.log("cancel button is clicked")
-        hideButtons()
-    })
+//     $(cancelbutton).on('click',function(event){
+//         event.preventDefault();
+//         console.log("cancel button is clicked")
+//         hideButtons()
+//     })
 
-    $(deletebutton).on('click', function(event){
-      event.preventDefault();
-      console.log("delete button is clicked");
+//     $(deletebutton).on('click', function(event){
+//       event.preventDefault();
+//       console.log("delete button is clicked");
 
-      const formData = {
-        recordid: event.target.value,
-        newquantity: $(quantity2).children().val(),
-        inputdate: $('#inputdate').val(),
-        profileid: $('#profileid').val(),
-        type: "delete"
-        }
+//       const formData = {
+//         recordid: event.target.value,
+//         newquantity: $(quantity2).children().val(),
+//         inputdate: $('#inputdate').val(),
+//         profileid: $('#profileid').val(),
+//         type: "delete"
+//         }
 
-      $.post("/profile/updaterecords", formData, replaceTables);
-    })
+//       $.post("/profile/updaterecords", formData, replaceTables);
+//     })
 
-});}
+// });}
 
-initButtons()
+// initButtons()
 
 /////////////////////////////////////////
 // Adding AUTOCOMPLETE
@@ -236,7 +348,8 @@ function submitFoods(){
 function updateFoodsTable(results){
     var status = results;
     // $(status).insertBefore($("#update-food-AJAX"));
-    $("#records-table").append(status)
+    $("#records-button").append(status);
+    initFoodDiary();
     console.log("re-updated Foods Table");
 }
 
@@ -264,19 +377,31 @@ submitFoods();
 // });
 
 
-var atx = document.getElementById('myPieChart').getContext('2d');
-var chart = new Chart(atx, {
-    // The type of chart we want to create
-    type: 'doughnut',
 
-    // The data for our dataset
-    data: {
-        labels: ['Calories', "remaining"],
-        datasets: [{
-            label: "My First dataset",
-            backgroundColor: 'rgb(255, 99, 132)',
-            data: [$("#totalcalories").val(), 1200],
-        }]
-    },
-    options: {}
-});
+// var atx = document.getElementById('myPieChart').getContext('2d');
+// var chart = new Chart(atx, {
+//     // The type of chart we want to create
+//     type: 'doughnut',
+
+//     // The data for our dataset
+//     data: {
+//         labels: ['Calories', "remaining"],
+//         datasets: [{
+//             label: "My First dataset",
+//             backgroundColor: ['rgb(255, 99, 132)', 'rgb(255,200,200)'],
+//             data: [1000, 1200]
+//         }]
+//     },
+//     options: {
+//       // tooltipEvents: [],
+//       //   showTooltips: true,
+//       //   onAnimationComplete: function() {
+//       //       this.showTooltip(this.segments, true);
+//       //   },
+//       //   tooltipTemplate: "<%= label %> - <%= data %>"
+//     }
+// });
+
+
+
+// Display Modal Information //

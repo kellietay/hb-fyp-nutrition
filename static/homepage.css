@@ -1,7 +1,7 @@
 #homepagebackground {
   background-image: url("backgroundimage.jpg");
   background-color: #cccccc;
-  height: 600px;
+  height: 100%;
   width: 100%;
   background-position: center;
   background-repeat: no-repeat;

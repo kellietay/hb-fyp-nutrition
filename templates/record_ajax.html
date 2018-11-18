@@ -1,24 +1,43 @@
-            <tr id="food-table-{{item.record_id}}">
-                <td>{{ item.food.food_name }}</td>
-                <td>
-                    <div id="food-form-quantity1-{{item.record_id}}" class="quantity">{{ item.serving_qty }}</div>
+<button 
+                type="button" 
+                class="btn btn-outline-primary food-diary-buttons"
+                id="button-{{item.record_id}}" 
+                style="width:280px" 
+                data-toggle="modal" 
+                data-target="#exampleModalCenter">
 
-                    <div style="display: none;" id="food-form-quantity2-{{item.record_id}}" class="editquantity"><input type=text placeholder={{item.serving_qty}}></div>
-                </td>
-                <td>{{ item.serving_unit }} </td>
-                <td>{{ item.serving_weight_grams }}</td>
-                <td>
-                    <button id="food-form-button-edit-{{item.record_id}}" class="editbuttons" name="record_id" type="submit" value="{{item.record_id}}">Modify</button>
-                    <button style="display: none;" id="food-form-button-submit-{{item.record_id}}" type="submit" value="{{item.record_id}}">Save</button>
-                    <button style="display: none;" id="food-form-button-delete-{{item.record_id}}" type="submit" value="{{item.record_id}}">Delete</button>
-                    <button style="display: none;" id="food-form-button-cancel-{{item.record_id}}" type="submit" value="{{item.record_id}}">Cancel</button>
+                <div id="quantity1-{{item.record_id}}" style="text-transform:capitalize;"
 
-                </td>
-            </tr>
-    
-<script>
-    $("body").find("*").each(function() {
-    $(this).off("click");
-});
-</script> 
-   <script src="/static/profile.js"></script>
+                data-record_id="{{item.record_id}}" 
+                data-food_name="{{item.food.food_name}}"
+                data-serving_qty="{{item.serving_qty}}"
+                data-serving_unit="{{item.serving_unit}}"
+                data-serving_weight_grams="{{item.serving_weight_grams}}" 
+                data-calories="{{item.food.calories}}"
+                data-carbohydrates="{{item.food.carbohydrates}}"
+                data-fiber="{{item.food.fiber}}"
+                data-fat="{{item.food.fat}}"
+                data-protein="{{item.food.protein}}"
+                data-vit-A="{{item.food.vitA}}" 
+                data-vit-C="{{item.food.vitC}}" 
+                data-vit-D="{{item.food.vitD}}"
+                data-vit-E="{{item.food.vitE}}" 
+                data-vit-B6="{{item.food.vitB6}}"
+                data-vit-B12="{{item.food.vitB12}}"
+                data-thiamin="{{item.food.thiamin}}"
+                data-riboflavin="{{item.food.riboflavin}}"
+                data-niacin="{{item.food.niacin}}"
+                data-folate="{{item.food.folate}}"
+                data-calcium="{{item.food.calcium}}"
+                data-copper="{{item.food.copper}}"
+                data-iodine="{{item.food.iodine}}"
+                data-iron="{{item.food.iron}}"
+                data-magnesium="{{item.food.magnesium}}"
+                data-phosphorus="{{item.food.phosphorus}}"
+                data-selenium="{{item.food.iron}}"
+                data-zinc="{{item.food.zinc}}"
+                data-potassium="{{item.food.potassium}}"
+                data-sodium="{{item.food.sodium}}"
+                data-chloride="{{item.food.chloride}}">
+                {{ item.serving_qty }} - {{item.food.food_name}}, {{ item.serving_unit}} ({{item.serving_weight_grams}}g)</div>
+              </button>

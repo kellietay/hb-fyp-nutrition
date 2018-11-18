@@ -1,60 +1,176 @@
-<table>
-    <tr>
-        <th>Nutrient Name</th>
-        <th>Reccomended Daily Value</th>
-        <th>Today's Values</th>
-    </tr>
-    <tr>
-        <td>Calories</td>
-        <td>{{cal_obj.calories_modactive}}
-        <td>{{total_nutrients['calories']}}</td>
-    </tr>
-    {%for item in nutrient_dict %}
-        <tr>
-            <td>{{ nutrient_dict[item] }}</td>
-            <td>{{ ref_obj[item] }}</td>
-            <td>{{ total_nutrients[item] }}</td>
-        </tr>
-    {% endfor %}
-</table>
 
-<h1>Foods eaten today</h1>
-    <table>
-        <thead>
-        <tr>
-            <th>Food</th>
-            <th>Quantity</th>
-            <th>Unit </th>
-            <th>Serving Weight (g)</th>
-            <th></th>
-        </tr>
-        </thead>
+    <br><br>
+    <h3>{{ profile_obj["name"] }}'s Profile</h3>
+    <br><br>
 
-        <tbody id="records-table">
-        {%for item in rec_obj %}
-            <tr id="food-table-{{item.record_id}}">
-                <td>{{ item.food.food_name }}</td>
-                <td>
-                    <div id="food-form-quantity1-{{item.record_id}}" class="quantity">{{ item.serving_qty }}</div>
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active show" data-toggle="tab" href="#overview">Macro-Nutrients</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#details">Vitamins</a>
+  </li>
+    <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#elements">Elements</a>
+  </li>
+</ul>
+<div id="myTabContent" class="tab-content">
+  <div class="tab-pane fade active show" id="overview">
+    <div class="container-fluid">
+<br><br>
+        <h5>Macro-Nutrients</h5><br>
+<div class="row">
+    <div class="col-sm-9">
+<div class="row">
 
-                    <div style="display: none;" id="food-form-quantity2-{{item.record_id}}" class="editquantity"><input type=text placeholder={{item.serving_qty}}></div>
-                </td>
-                <td>{{ item.serving_unit }} </td>
-                <td>{{ item.serving_weight_grams }}</td>
-                <td>
-                    <button id="food-form-button-edit-{{item.record_id}}" class="editbuttons" name="record_id" type="submit" value="{{item.record_id}}">Modify</button>
-                    <button style="display: none;" id="food-form-button-submit-{{item.record_id}}" type="submit" value="{{item.record_id}}">Save</button>
-                    <button style="display: none;" id="food-form-button-delete-{{item.record_id}}" type="submit" value="{{item.record_id}}">Delete</button>
-                    <button style="display: none;" id="food-form-button-cancel-{{item.record_id}}" type="submit" value="{{item.record_id}}">Cancel</button>
+    <div class="col-sm-4">
+    <div class="card border-secondary mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Calories</h5>
+        <h6><font color="darkgrey">{{total_nutrients["calories"]|round|int}}</font> /{{cal_obj["calories_modactive"]|round|int}} </h6>
+        <div class="progress" style="height: 25px">
+        <div class="progress-bar" role="progressbar" style="width:{{percent["calories"]}}%;" aria-valuenow={{percent["calories"]}} aria-valuemin="0" aria-valuemax=100>{{percent["calories"]}}%
+        </div>
+        </div>
+        <p class="card-text"></p>
+      </div>
+    </div>
+    </div>
 
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-<script>
-    $("body").find("*").each(function() {
-    $(this).off("click");
-});
-</script>
-    <script src="/static/profile.js"></script>
+<!-- </div>
+</div>
+
+<div class="container-fluid">
+<div class="row"> -->
+
+{% for item in macro %}
+<div class="col-sm-4 col-md-4">
+    <div class="card border-secondary mb-3">
+      <div class="card-body">
+        {% if not ref_obj[item] %}
+            <h5 class="card-title">{{macro[item]}}</h5>
+            <h6><font color="darkgrey">{{total_nutrients[item]|round(2)}}</font> / None </h6>
+            <div class="row no-gutters">
+                <div class="col-sm-12">
+                    <div class="progress" style="height: 25px">
+                    <div class="progress-bar green" role="progressbar" style="width:100%" aria-valuenow={{total_nutrients[item]}} aria-valuemin="0" aria-valuemax={{ref_obj[item]}}> No Reference Values
+                    </div><!-- <div style="height: 50px; display: inline-block; position: absolute; right:0; padding-top:20px">{{ref_obj[item]}}</div> -->
+                    </div>
+
+                </div>
+            </div>
+        {% else %}
+            <h5 class="card-title">{{macro[item]}}</h5>
+            <h6><font color="darkgrey">{{total_nutrients[item]|round(2)}}</font> / {{ref_obj[item]|round(2)}} </h6>
+            <div class="row no-gutters">
+                <div class="col-sm-12">
+                <div class="progress" style="height: 25px">
+                    {% if percent[item] > 100 %}
+                        <div class="progress-bar green" role="progressbar" style="width:{{percent[item]}}%" aria-valuenow={{total_nutrients[item]}} aria-valuemin="0" aria-valuemax={{ref_obj[item]}}> {{percent[item]}}%
+                        </div>
+                    {% else %}
+                        <div class="progress-bar" role="progressbar" style="width:{{percent[item]}}%" aria-valuenow={{total_nutrients[item]}} aria-valuemin="0" aria-valuemax={{ref_obj[item]}}> {{percent[item]}}%
+                        </div>  
+                    {% endif %}
+                </div>
+                </div>
+            </div>
+            {% endif %}
+        <p class="card-text"></p>
+        </div>
+      </div>
+
+</div>
+{% endfor %}
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="tab-pane fade" id="details">
+
+<div class="index-skills">
+    <div class="container-fluid" style="display:block !important; width:100% !important; margin-left:auto !important; margin-right:auto !important; text-align:left !important; padding:15px 30px 15px 30px !important;">
+         <div class="row">
+            <div class="col-sm-2"></div>
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-sm-8">
+                <br><h5> Vitamins</h5><br>
+
+                {%for item in vitamin %}
+
+                    <div class="col-sm-12">
+                    <div class="row" style="padding:3px">
+                    <div class="col-sm-3">{{vitamin[item]}}</div>
+                    <div class="col-sm-3"><font color="darkgrey">{{total_nutrients[item]|round(1)}}</font> / {{ref_obj[item]|round(1)}}</div>
+                    <div class="col"> 
+                    <div class="progress">
+                        {%if percent[item] > 100%}
+                        <div class="progress-bar green" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:{{percent[item]}}%">{{percent[item]|round|int}}%
+                        </div>
+
+                        {% else %}
+
+                        <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:{{percent[item]}}%">{{percent[item]|round|int}}%
+                        </div>
+                        {% endif %}
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                {% endfor %}
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="tab-pane fade" id="elements">
+
+<div class="index-skills">
+    <div class="container-fluid" style="display:block !important; width:100% !important; margin-left:auto !important; margin-right:auto !important; text-align:left !important; padding:15px 30px 15px 30px !important;">
+         <div class="row">
+            <div class="col-sm-2"></div>
+        </div>
+
+
+        <div class="row" >
+            <div class="col-sm-8">
+                <br><h5>Elements</h5><br>
+                {%for item in element %}
+                    <div class="col-sm-12">
+                    <div class="row" style="padding:3px">
+                    <div class="col-sm-3">{{element[item]}}</div>
+                    <div class="col-sm-3"><font color="darkgrey">{{total_nutrients[item]|round(1)}}</font> / {{ref_obj[item]|round(1)}}</div>
+                    <div class="col"> 
+                    <div class="progress">
+                        {%if percent[item] > 100%}
+                        <div class="progress-bar green" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: {{percent[item]}}%">{{percent[item]|round|int}}%
+                        </div>
+                        {% else %}
+                        <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: {{percent[item]}}%">{{percent[item]|round|int}}%
+                        </div>
+                        {% endif %}
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <input id="profileid" type="hidden" name="acList" value={{profileid}}>
+    <input id="userid" type="hidden" name="acList" value={{userid}}>
+
+</div>
+<br><br><br><br><br><br>
